@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+  background-color: black;
+}
+
+.dynamic-width {
+  box-sizing: border-box;
+  width: calc(100vh * 1.6);
+  overflow: hidden
+}
