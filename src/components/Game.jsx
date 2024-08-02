@@ -9,6 +9,10 @@ import Background from "./Background"
 
 const Game = ({ altMode }) => {
   const containerRef = useRef()
+  const arena = useRef({
+    x: 4,
+    z: 4
+  })
 
   return (
     <div ref={containerRef} className="w-full h-full">
@@ -27,6 +31,7 @@ const Game = ({ altMode }) => {
         <Canvas
           camera={{
             position: [0,3,5],
+            fov: 55
           }}
           shadows
         >
@@ -54,7 +59,7 @@ const Game = ({ altMode }) => {
 
             <Background />
             
-            <Player altMode={altMode} />
+            <Player altMode={altMode} arena={arena} />
 
           </Suspense>
         </Canvas>

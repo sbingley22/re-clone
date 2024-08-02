@@ -10,7 +10,7 @@ const vec3b = new THREE.Vector3()
 const vec3c = new THREE.Vector3()
 const quat = new THREE.Quaternion()
 
-const Player = ({ altMode }) => {
+const Player = ({ altMode, arena }) => {
   const [visibleNodes, setVisibleNodes] = useState(["Ana", "Pistol", "Shoes-HighTops", "Jacket", "Hair-Parted"])
   const anim = useRef("Idle")
   const [, getKeys] = useKeyboardControls()
@@ -52,6 +52,11 @@ const Player = ({ altMode }) => {
       const runModifier = shift
       const speed = 1.5 * delta * (runModifier? 2 : 1)
       const targetPosition = vec3.set(group.current.position.x + dx * speed, group.current.position.y, group.current.position.z + dy * speed)
+
+      if (targetPosition.x < arena.current.x * -1) targetPosition.x = group.current.position.x
+      if (targetPosition.z < arena.current.z * -1) targetPosition.z = group.current.position.z
+      if (targetPosition.x > arena.current.x * 1) targetPosition.x =  group.current.position.x
+      if (targetPosition.z > arena.current.z * 1) targetPosition.z = group.current.position.z
 
       if (dx || dy) {
         // Calculate target rotation

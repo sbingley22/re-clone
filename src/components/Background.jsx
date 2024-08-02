@@ -5,7 +5,7 @@ const Background = () => {
   const semiTransparentBlackMaterial = new MeshStandardMaterial({
     color: 'black',
     transparent: true,
-    opacity: 0.5,
+    opacity: 0.6,
   })
 
   return (

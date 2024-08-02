@@ -12,7 +12,7 @@ function App() {
   )
 
   return (
-    <div className="dynamic-width h-screen">
+    <div className="dynamic-width ">
       <Game altMode={altMode} />
     </div>
   ) 
