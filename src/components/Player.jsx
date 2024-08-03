@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unknown-property */
 /* eslint-disable react/prop-types */
 import { useEffect, useRef, useState } from "react"
 import Character from "./Character"
@@ -10,7 +11,7 @@ const vec3b = new THREE.Vector3()
 const vec3c = new THREE.Vector3()
 const quat = new THREE.Quaternion()
 
-const Player = ({ options, arena }) => {
+const Player = ({ options, arena, setHudInfo }) => {
   const [visibleNodes, setVisibleNodes] = useState(["Ana", "Pistol", "Shoes-HighTops", "Jacket", "Hair-Parted"])
   const anim = useRef("Idle")
   const [, getKeys] = useKeyboardControls()
@@ -40,6 +41,19 @@ const Player = ({ options, arena }) => {
     if (a === "Take Damage") return true
 
     return false
+  }
+
+  const takeDamage = (dmg) => {
+    if (!group.current) return
+
+    group.current.health -= dmg
+
+    if (group.current.health <= 0) {
+      // game over
+
+    }
+
+    setHudInfo(prev => prev.health = group.current.health)
   }
 
   // Game Loop
@@ -109,7 +123,9 @@ const Player = ({ options, arena }) => {
       }
 
       // check for obstructions
-      const runModifier = options.defaultRun === false ? shift : !shift
+      let runModifier = options.defaultRun === false ? shift : !shift
+      const lowHealth = group.current.health < 50
+      if (lowHealth) runModifier = false
       const speed = 1.5 * delta * (runModifier? 2 : 1)
       const targetPosition = vec3.set(group.current.position.x + dx * speed, group.current.position.y, group.current.position.z + dy * speed)
 
@@ -127,6 +143,7 @@ const Player = ({ options, arena }) => {
         }
         else {
           moving.current = "Walking"
+          if (lowHealth) moving.current = "WalkingHurt"
         }
 
         // Apply moving animation only when applicable
@@ -135,13 +152,17 @@ const Player = ({ options, arena }) => {
             if (jumpForce.current === null) anim.current = "Jogging"
           }
           else {
-            if (jumpForce.current === null) anim.current = "Walking"
+            if (jumpForce.current === null) {
+              anim.current = "Walking"
+              if (lowHealth) anim.current = "WalkingHurt"
+            }
           }
         }
       }
       else {
         if (!isUnskippableAnimation() && jumpForce.current === null) {
           anim.current = "Idle"
+          if (lowHealth) anim.current = "IdleHurt"
         }
       }
 
@@ -177,7 +198,10 @@ const Player = ({ options, arena }) => {
   })
 
   return (
-    <group ref={group}>
+    <group 
+      ref={group}
+      health={100}
+    >
       <Character 
         visibleNodes={visibleNodes}
         anim={anim}

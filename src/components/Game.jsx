@@ -1,17 +1,21 @@
 /* eslint-disable react/no-unknown-property */
 /* eslint-disable react/prop-types */
 import { Canvas } from "@react-three/fiber"
-import { Suspense, useRef } from "react"
+import { Suspense, useRef, useState } from "react"
 import { Environment, KeyboardControls } from "@react-three/drei"
 import Player from "./Player"
 import ShadowCatcher from "./ShadowCatcher"
 import Background from "./Background"
+import Hud from "./Hud"
 
 const Game = ({ options }) => {
   const containerRef = useRef()
   const arena = useRef({
     x: 4,
     z: 4
+  })
+  const [hudInfo, setHudInfo] = useState({
+    health: 100,
   })
 
   return (
@@ -63,11 +67,14 @@ const Game = ({ options }) => {
 
             <Background />
             
-            <Player options={options} arena={arena} />
+            <Player options={options} arena={arena} setHudInfo={setHudInfo} />
 
           </Suspense>
         </Canvas>
       </KeyboardControls>
+
+      <Hud options={options} hudInfo={hudInfo} />
+
     </div>
   )
 }
