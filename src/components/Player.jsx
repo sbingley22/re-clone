@@ -10,7 +10,7 @@ const vec3b = new THREE.Vector3()
 const vec3c = new THREE.Vector3()
 const quat = new THREE.Quaternion()
 
-const Player = ({ altMode, arena }) => {
+const Player = ({ options, arena }) => {
   const [visibleNodes, setVisibleNodes] = useState(["Ana", "Pistol", "Shoes-HighTops", "Jacket", "Hair-Parted"])
   const anim = useRef("Idle")
   const [, getKeys] = useKeyboardControls()
@@ -20,13 +20,13 @@ const Player = ({ altMode, arena }) => {
 
   // Alt Mode
   useEffect(()=>{
-    if (altMode) {
+    if (options.altMode) {
       setVisibleNodes(["AnaGen", "Pistol", "Shoes-HighTops", "Hair-Parted"])
     }
     else {
       setVisibleNodes(["Ana", "Pistol", "Shoes-HighTops", "Jacket", "Hair-Parted"])
     }
-  }, [altMode])
+  }, [options])
 
   const isUnskippableAnimation = () => {
     const a = anim.current
@@ -109,7 +109,7 @@ const Player = ({ altMode, arena }) => {
       }
 
       // check for obstructions
-      const runModifier = shift
+      const runModifier = options.defaultRun === false ? shift : !shift
       const speed = 1.5 * delta * (runModifier? 2 : 1)
       const targetPosition = vec3.set(group.current.position.x + dx * speed, group.current.position.y, group.current.position.z + dy * speed)
 

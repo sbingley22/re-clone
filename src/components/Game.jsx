@@ -7,7 +7,7 @@ import Player from "./Player"
 import ShadowCatcher from "./ShadowCatcher"
 import Background from "./Background"
 
-const Game = ({ altMode }) => {
+const Game = ({ options }) => {
   const containerRef = useRef()
   const arena = useRef({
     x: 4,
@@ -63,7 +63,7 @@ const Game = ({ altMode }) => {
 
             <Background />
             
-            <Player altMode={altMode} arena={arena} />
+            <Player options={options} arena={arena} />
 
           </Suspense>
         </Canvas>
