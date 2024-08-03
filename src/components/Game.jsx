@@ -26,6 +26,10 @@ const Game = ({ altMode }) => {
         { name: "interact", keys: ["f", "F"] },
         { name: "inventory", keys: ["`"] },
         { name: "shift", keys: ["Shift"] },
+        { name: "aimUp", keys: ["i", "I"] },
+        { name: "aimDown", keys: ["k", "K"] },
+        { name: "aimLeft", keys: ["j", "J"] },
+        { name: "aimRight", keys: ["l", "L"] },
         ]}
       >
         <Canvas
@@ -52,9 +56,9 @@ const Game = ({ altMode }) => {
 
             <ShadowCatcher />
             <directionalLight
+              castShadow
               position={[0,10,0]}
               intensity={0.1}
-              castShadow
             />
 
             <Background />

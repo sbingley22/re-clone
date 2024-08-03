@@ -6,7 +6,7 @@ import { useSkinnedMeshClone } from "./SkinnedMeshClone"
 import { useAnimations } from "@react-three/drei"
 import { useFrame } from "@react-three/fiber"
 
-const Character = ({ visibleNodes, anim }) => {
+const Character = ({ visibleNodes, anim, moving = "Idle" }) => {
   const { scene, nodes, animations } = useSkinnedMeshClone(glb)
   const { mixer, actions } = useAnimations(animations, scene)
   const lastAnim = useRef(anim.current)
@@ -55,18 +55,32 @@ const Character = ({ visibleNodes, anim }) => {
   useEffect(()=>{
     if (!mixer) return
 
-    const oneShotAnims = []
+    const oneShotAnims = ["Fight Jab", "Fight Roundhouse", "Fight Straight", "Jump", "Land", "Pistol Fire", "Take Damage"]
     oneShotAnims.forEach(osa => {
       actions[osa].clampWhenFinished = true
       actions[osa].repetitions = 1
     })
 
     mixer.addEventListener("finished", (e) => {
-
+      //console.log(anim.current, lastAnim.current, e)
+      if (lastAnim.current === "Pistol Fire") {
+        anim.current = "Pistol Aim"
+        return
+      }
+      if (lastAnim.current === "Jump") {
+        anim.current = "Fall"
+        return
+      }
+      if (lastAnim.current === "Land") {
+        anim.current = moving.current 
+        console.log(moving.current)
+        return
+      }
+      anim.current = "Idle"
     })
 
     return mixer.removeEventListener("finished")
-  }, [mixer, actions])
+  }, [mixer, actions, anim, moving])
 
 
   // Update Animations

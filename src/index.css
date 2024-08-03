@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+body, html {
+  overflow: hidden;
+}
+
 body {
   background-color: black;
   padding: 0;
