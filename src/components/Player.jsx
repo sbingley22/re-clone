@@ -11,13 +11,14 @@ const vec3b = new THREE.Vector3()
 const vec3c = new THREE.Vector3()
 const quat = new THREE.Quaternion()
 
-const Player = ({ options, arena, setHudInfo }) => {
+const Player = ({ options, arena, setHudInfo, setZombies, zombieRefs }) => {
   const [visibleNodes, setVisibleNodes] = useState(["Ana", "Pistol", "Shoes-HighTops", "Jacket", "Hair-Parted"])
   const anim = useRef("Idle")
   const [, getKeys] = useKeyboardControls()
   const group = useRef()
   const jumpForce = useRef(null)
   const moving = useRef("Idle")
+  const targetedEnemy = useRef(null)
 
   // Alt Mode
   useEffect(()=>{
@@ -79,7 +80,62 @@ const Player = ({ options, arena, setHudInfo }) => {
     const shoot = () => {
       if (!isUnskippableAnimation()) {
         anim.current = "Pistol Fire"
+
+        if (targetedEnemy.current) {
+          const zombie = zombieRefs.current.find(z => z.current.id === targetedEnemy.current)
+          zombie.current.dmgFlag = 20
+        }
       }
+    }
+    const lockOnEnemy = (dx, dy) => {
+      let closestEnemy = null;
+      let closestDistance = Infinity;
+      let closestAngle = Infinity;
+      targetedEnemy.current = null
+
+      // Loop through all enemies to find the closest one in the direction the player is facing
+      zombieRefs.current.forEach(e => {
+        const enemy = e.current
+        // Get enemy position
+        const ex = enemy.position.x;
+        const ez = enemy.position.z;
+
+        // Calculate vector from player to enemy
+        const vx = ex - group.current.position.x;
+        const vz = ez - group.current.position.z;
+
+        // Calculate distance to enemy
+        const distance = Math.sqrt(vx * vx + vz * vz);
+
+        // Normalize the direction vector the player is facing
+        const len = Math.sqrt(dx * dx + dy * dy);
+        const ndx = dx / len;
+        const ndy = dy / len;
+
+        // Normalize the vector to the enemy
+        const lenEnemy = Math.sqrt(vx * vx + vz * vz);
+        const evx = vx / lenEnemy;
+        const evz = vz / lenEnemy;
+
+        // Calculate the angle between the player's direction and the vector to the enemy
+        const dotProduct = ndx * evx + ndy * evz;
+        const angle = Math.acos(dotProduct);
+
+        // Check if this enemy is the closest in the direction the player is facing
+        if (angle < Math.PI / 4 && distance < closestDistance && angle < closestAngle) { // You can adjust the angle threshold (Math.PI / 4) as needed
+          closestEnemy = { x: vx, y: vz };
+          closestDistance = distance;
+          closestAngle = angle;
+          targetedEnemy.current = enemy.id
+        }
+      });
+
+      // If no enemy is close enough in the direction, return the original direction
+      if (!closestEnemy) {
+        return { x: dx, y: dy };
+      }
+
+      return closestEnemy;
     }
     const aim = () => {
       moving.current = "Pistol Aim"
@@ -91,6 +147,10 @@ const Player = ({ options, arena, setHudInfo }) => {
       else if (aimDown) dy = 1
       if (aimLeft) dx = -1
       else if (aimRight) dx = 1
+
+      const eLock = lockOnEnemy(dx, dy)
+      dx = eLock.x
+      dy = eLock.y
 
       rotateToVec(dx, dy)
 

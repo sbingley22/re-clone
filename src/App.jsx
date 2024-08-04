@@ -6,7 +6,7 @@ function App() {
   const [mode, setMode] = useState(0)
   // eslint-disable-next-line no-unused-vars
   const [options, setOptions] = useState({
-    altMode: true,
+    altMode: false,
     defaultRun: true
   })
   

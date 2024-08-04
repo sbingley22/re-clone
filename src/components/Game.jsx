@@ -7,6 +7,8 @@ import Player from "./Player"
 import ShadowCatcher from "./ShadowCatcher"
 import Background from "./Background"
 import Hud from "./Hud"
+import Zombie from "./Zombie"
+import { v4 as uuidv4 } from 'uuid'
 
 const Game = ({ options }) => {
   const containerRef = useRef()
@@ -17,6 +19,17 @@ const Game = ({ options }) => {
   const [hudInfo, setHudInfo] = useState({
     health: 100,
   })
+  const [zombies, setZombies] = useState([
+    {
+      id: uuidv4(),
+      position: [2,0,2]
+    },
+    {
+      id: uuidv4(),
+      position: [-2,0,2]
+    },
+  ])
+  const zombieRefs = useRef([])
 
   return (
     <div ref={containerRef} className="w-full h-full">
@@ -67,7 +80,22 @@ const Game = ({ options }) => {
 
             <Background />
             
-            <Player options={options} arena={arena} setHudInfo={setHudInfo} />
+            <Player 
+              options={options} 
+              arena={arena} 
+              setHudInfo={setHudInfo} 
+              setZombies={setZombies}
+              zombieRefs={zombieRefs}
+            />
+
+            {zombies.map(zomb => (
+              <Zombie 
+                key={zomb.id} 
+                id={zomb.id}
+                position={zomb.position} 
+                zombieRefs={zombieRefs}
+              />
+            ))}
 
           </Suspense>
         </Canvas>
