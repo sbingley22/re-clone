@@ -11,7 +11,7 @@ const vec3b = new THREE.Vector3()
 const vec3c = new THREE.Vector3()
 const quat = new THREE.Quaternion()
 
-const Player = ({ options, arena, setHudInfo, setZombies, zombieRefs }) => {
+const Player = ({ options, arena, setHudInfo, playerRef, setZombies, zombieRefs }) => {
   const [visibleNodes, setVisibleNodes] = useState(["Ana", "Pistol", "Shoes-HighTops", "Jacket", "Hair-Parted"])
   const anim = useRef("Idle")
   const [, getKeys] = useKeyboardControls()
@@ -49,33 +49,48 @@ const Player = ({ options, arena, setHudInfo, setZombies, zombieRefs }) => {
 
     group.current.health -= dmg
 
+    anim.current = "Take Damage"
+
     if (group.current.health <= 0) {
       // game over
-
+      console.log("Game Over")
     }
 
-    setHudInfo(prev => prev.health = group.current.health)
+    setHudInfo(prev => ({
+      ...prev,
+      health: group.current.health
+    }))
   }
 
   // Game Loop
   // eslint-disable-next-line no-unused-vars
   useFrame((state, delta) => {
+    if (!group.current) return
+    if (!playerRef.current) {
+      playerRef.current = group.current
+    }
+
     // eslint-disable-next-line no-unused-vars
     const { forward, backward, left, right, jump, interact, inventory, shift, aimUp, aimLeft, aimRight, aimDown } = getKeys()
 
+    // Check Flags
+    if (group.current.dmgFlag) {
+      takeDamage(group.current.dmgFlag)
+      group.current.dmgFlag = null
+    }
+
     const rotateToVec = (dx, dy) => {
-        // Calculate target rotation
-        const direction = vec3b.set(dx, 0, dy).normalize()
-        const angle = Math.atan2(direction.x, direction.z)
+      // Calculate target rotation
+      const direction = vec3b.set(dx, 0, dy).normalize()
+      const angle = Math.atan2(direction.x, direction.z)
 
-        // Create quaternions for current and target rotations
-        const currentQuaternion = group.current.quaternion.clone()
-        const targetQuaternion = quat.setFromAxisAngle(vec3c.set(0, 1, 0), angle)
+      // Create quaternions for current and target rotations
+      const currentQuaternion = group.current.quaternion.clone()
+      const targetQuaternion = quat.setFromAxisAngle(vec3c.set(0, 1, 0), angle)
 
-        // Interpolate rotation using slerp
-        currentQuaternion.slerp(targetQuaternion, 0.1)
-        group.current.quaternion.copy(currentQuaternion)
-
+      // Interpolate rotation using slerp
+      currentQuaternion.slerp(targetQuaternion, 0.1)
+      group.current.quaternion.copy(currentQuaternion)
     }
     const shoot = () => {
       if (!isUnskippableAnimation()) {
@@ -95,6 +110,8 @@ const Player = ({ options, arena, setHudInfo, setZombies, zombieRefs }) => {
 
       // Loop through all enemies to find the closest one in the direction the player is facing
       zombieRefs.current.forEach(e => {
+        if (!e.current) return
+
         const enemy = e.current
         // Get enemy position
         const ex = enemy.position.x;
@@ -261,6 +278,7 @@ const Player = ({ options, arena, setHudInfo, setZombies, zombieRefs }) => {
     <group 
       ref={group}
       health={100}
+      dmgFlag={null}
     >
       <Character 
         visibleNodes={visibleNodes}

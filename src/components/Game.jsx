@@ -9,6 +9,7 @@ import Background from "./Background"
 import Hud from "./Hud"
 import Zombie from "./Zombie"
 import { v4 as uuidv4 } from 'uuid'
+import Slime from "./Slime"
 
 const Game = ({ options }) => {
   const containerRef = useRef()
@@ -19,6 +20,7 @@ const Game = ({ options }) => {
   const [hudInfo, setHudInfo] = useState({
     health: 100,
   })
+  const playerRef = useRef(null)
   const [zombies, setZombies] = useState([
     {
       id: uuidv4(),
@@ -30,6 +32,21 @@ const Game = ({ options }) => {
     },
   ])
   const zombieRefs = useRef([])
+  const [slimes, setSlimes] = useState([
+    {
+      id: uuidv4(),
+      position: [-2, 0, -2],
+    }
+  ])
+
+  const addSlime = (x, z) => {
+    const tempSlimes = [...slimes]
+    tempSlimes.push({
+      id: uuidv4(),
+      position: [x, 0, z]
+    })
+    setSlimes(tempSlimes)
+  }
 
   return (
     <div ref={containerRef} className="w-full h-full">
@@ -83,6 +100,7 @@ const Game = ({ options }) => {
             <Player 
               options={options} 
               arena={arena} 
+              playerRef={playerRef}
               setHudInfo={setHudInfo} 
               setZombies={setZombies}
               zombieRefs={zombieRefs}
@@ -94,6 +112,19 @@ const Game = ({ options }) => {
                 id={zomb.id}
                 position={zomb.position} 
                 zombieRefs={zombieRefs}
+                playerRef={playerRef}
+                setZombies={setZombies}
+                addSlime={addSlime}
+              />
+            ))}
+            
+            {slimes.map(slime => (
+              <Slime 
+                key={slime.id} 
+                id={slime.id}
+                position={slime.position} 
+                setSlimes={setSlimes}
+                playerRef={playerRef}
               />
             ))}
 
