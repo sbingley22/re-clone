@@ -15,6 +15,7 @@ const Zombie = ({ id, position, playerRef, zombieRefs, setZombies, addSlime }) =
   const anim = useRef("Idle")
   const group = useRef()
   const moving = useRef("Idle")
+  const attackCoolDown = useRef(0.2)
 
   // Set Zombie ref
   useEffect(()=>{
@@ -104,14 +105,64 @@ const Zombie = ({ id, position, playerRef, zombieRefs, setZombies, addSlime }) =
       const distance = Math.sqrt(vx * vx + vz * vz)
 
       // Normalize the vector to the player
-      const lenPlayer = Math.sqrt(vx * vx + vz * vz)
-      const pvx = vx / lenPlayer
-      const pvz = vz / lenPlayer
+      const pvx = vx / distance
+      const pvz = vz / distance
 
       // Face Player
       rotateToVec(pvx, pvz)
 
+      // Move to Player
+      if (distance < 0.5) {
+        // Attack player
+        attackCoolDown.current -= delta
 
+        if (attackCoolDown.current <= 0) {
+          if (!isUnskippableAnimation()) {
+            anim.current = "Fight Jab"
+            attackCoolDown.current = 1
+            playerRef.current.dmgFlag = 20
+          }
+        }
+        else {
+          if (!isUnskippableAnimation()) {
+            anim.current = "Fight Stance"
+          }
+        }
+      }
+      else {
+        const speed = 0.5
+        const tempX = group.current.position.x + speed * pvx * delta
+        const tempZ = group.current.position.z + speed * pvz * delta
+        let canMove = true
+
+        zombieRefs.current.forEach(z => {
+          if (group.current.id === z.current.id) return
+
+          const vx = z.current.position.x - group.current.position.x
+          const vz = z.current.position.z - group.current.position.z
+          const distance = Math.sqrt(vx * vx + vz * vz)
+          if (distance < 0.25) {
+            const zvx = vx / distance
+            const zvz = vz / distance
+    
+            const dotProduct = pvx * zvx + pvz * zvz
+            // Check if angle of direction heading is within
+            // 90 degrees of obstruction. (If obstruction is in front.)
+            if (dotProduct > 0) { 
+              canMove = false
+            }
+          }
+        })
+
+        if (canMove) {
+          group.current.position.x = tempX
+          group.current.position.z = tempZ
+
+          if (!isUnskippableAnimation()) {
+            anim.current = "Walking"
+          }
+        }
+      }
     }
     logic()
 

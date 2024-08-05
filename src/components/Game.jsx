@@ -10,12 +10,15 @@ import Hud from "./Hud"
 import Zombie from "./Zombie"
 import { v4 as uuidv4 } from 'uuid'
 import Slime from "./Slime"
+import bgStreets from "../assets/bgs/streets.jpg"
 
 const Game = ({ options }) => {
   const containerRef = useRef()
   const arena = useRef({
-    x: 4,
-    z: 4
+    x1: -4,
+    x2: 4,
+    z1: -3,
+    z2: 6
   })
   const [hudInfo, setHudInfo] = useState({
     health: 100,
@@ -48,8 +51,24 @@ const Game = ({ options }) => {
     setSlimes(tempSlimes)
   }
 
+  let camFov = 5
+  let camPos = [0, 25, 55]
+  if (camFov === 20) camPos = [0,7.5,12]
+  else if (camFov === 15) camPos = [0,17,28]
+  else if (camFov === 10) camPos = [0,17,28]
+  else if (camFov === 5) camPos = [0,25,55]
+  else if (camFov === 1) camPos = [0,150,250]
+
   return (
-    <div ref={containerRef} className="w-full h-full">
+    <div 
+      ref={containerRef} 
+      className="w-full h-full"
+      style={{
+        backgroundImage: `url(${bgStreets}`, 
+        backgroundSize: "cover", 
+        backgroundPosition: "center"
+      }}
+    >
       <KeyboardControls
         map={[
         { name: "forward", keys: ["ArrowUp", "w", "W"] },
@@ -68,8 +87,8 @@ const Game = ({ options }) => {
       >
         <Canvas
           camera={{
-            position: [0,3,5],
-            fov: 55
+            position: camPos,
+            fov: camFov
           }}
           shadows
         >
@@ -78,14 +97,15 @@ const Game = ({ options }) => {
             <Environment 
               preset="night" 
               environmentIntensity={4} 
-              background 
-              backgroundIntensity={1} 
+              //background 
+              backgroundIntensity={5} 
               backgroundRotation={[0,4,0]}
               // ground={{
               //   height: 15, // Height of cam (Default: 15)
               //   radius: 50, // Radius (Default 60)
               //   scale: 100, // (Default: 1000)
               // }}
+              //files={bgStreets}
             />
 
             <ShadowCatcher />
@@ -95,7 +115,7 @@ const Game = ({ options }) => {
               intensity={0.1}
             />
 
-            <Background />
+            {/* <Background /> */}
             
             <Player 
               options={options} 

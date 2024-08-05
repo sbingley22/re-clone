@@ -73,7 +73,6 @@ const Character = ({ visibleNodes, anim, moving = "Idle" }) => {
       }
       if (lastAnim.current === "Land") {
         anim.current = moving.current 
-        console.log(moving.current)
         return
       }
       anim.current = "Idle"

@@ -206,10 +206,11 @@ const Player = ({ options, arena, setHudInfo, playerRef, setZombies, zombieRefs 
       const speed = 1.5 * delta * (runModifier? 2 : 1)
       const targetPosition = vec3.set(group.current.position.x + dx * speed, group.current.position.y, group.current.position.z + dy * speed)
 
-      if (targetPosition.x < arena.current.x * -1) targetPosition.x = group.current.position.x
-      if (targetPosition.z < arena.current.z * -1) targetPosition.z = group.current.position.z
-      if (targetPosition.x > arena.current.x * 1) targetPosition.x =  group.current.position.x
-      if (targetPosition.z > arena.current.z * 1) targetPosition.z = group.current.position.z
+      console.log(targetPosition.x, arena.current.x1)
+      if (targetPosition.x < arena.current.x1) targetPosition.x = group.current.position.x
+      if (targetPosition.z < arena.current.z1) targetPosition.z = group.current.position.z
+      if (targetPosition.x > arena.current.x2) targetPosition.x =  group.current.position.x
+      if (targetPosition.z > arena.current.z2) targetPosition.z = group.current.position.z
 
       if (dx || dy) {
         rotateToVec(dx, dy)

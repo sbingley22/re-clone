@@ -1,4 +1,4 @@
-kRE Clone
+RE Clone
 
 Live Link:
 
@@ -6,5 +6,7 @@ A simple re style game where you must withstand waves of zombies and other monst
 
 TODO:
 Add controller support
-Basic enemy AI walk at player then attack
-Add 3D background from old blender
+Add Wave Spawn System
+Add HUD info
+Change background so player is constrained to screen only far plane is needed
+Turn game into "side scroller" where once enemies are defeated next area can be entered
