@@ -1,46 +1,28 @@
 /* eslint-disable react/no-unknown-property */
 /* eslint-disable react/prop-types */
 import { Canvas } from "@react-three/fiber"
-import { Suspense, useRef, useState } from "react"
+import { Suspense, useEffect, useRef, useState } from "react"
 import { Environment, KeyboardControls } from "@react-three/drei"
 import Player from "./Player"
 import ShadowCatcher from "./ShadowCatcher"
-import Background from "./Background"
 import Hud from "./Hud"
 import Zombie from "./Zombie"
 import { v4 as uuidv4 } from 'uuid'
 import Slime from "./Slime"
-import bgStreets from "../assets/bgs/streets.jpg"
+import { levelData } from "../assets/levels"
 
-const Game = ({ options }) => {
+const Game = ({ options, levelName, setLevelName }) => {
   const containerRef = useRef()
-  const arena = useRef({
-    x1: -4,
-    x2: 4,
-    z1: -3,
-    z2: 6
-  })
+  const levels = useRef(levelData)
+
   const [hudInfo, setHudInfo] = useState({
     health: 100,
   })
   const playerRef = useRef(null)
   const [zombies, setZombies] = useState([
-    {
-      id: uuidv4(),
-      position: [2,0,2]
-    },
-    {
-      id: uuidv4(),
-      position: [-2,0,2]
-    },
   ])
   const zombieRefs = useRef([])
-  const [slimes, setSlimes] = useState([
-    {
-      id: uuidv4(),
-      position: [-2, 0, -2],
-    }
-  ])
+  const [slimes, setSlimes] = useState([])
 
   const addSlime = (x, z) => {
     const tempSlimes = [...slimes]
@@ -50,6 +32,20 @@ const Game = ({ options }) => {
     })
     setSlimes(tempSlimes)
   }
+
+  // Change Level
+  useEffect(()=>{
+    const newLevel = levels.current[levelName]
+    if (newLevel.zombies) setZombies(newLevel.zombies)
+    else {
+      zombieRefs.current = []
+      setZombies([])
+    }
+    if (newLevel.slimes) setSlimes(newLevel.slimes)
+    else {
+      setSlimes([])
+    }
+  }, [levelName])
 
   let camFov = 5
   let camPos = [0, 25, 55]
@@ -64,7 +60,7 @@ const Game = ({ options }) => {
       ref={containerRef} 
       className="w-full h-full"
       style={{
-        backgroundImage: `url(${bgStreets}`, 
+        backgroundImage: `url(${levels.current[levelName].img}`, 
         backgroundSize: "cover", 
         backgroundPosition: "center"
       }}
@@ -97,15 +93,6 @@ const Game = ({ options }) => {
             <Environment 
               preset="night" 
               environmentIntensity={4} 
-              //background 
-              backgroundIntensity={5} 
-              backgroundRotation={[0,4,0]}
-              // ground={{
-              //   height: 15, // Height of cam (Default: 15)
-              //   radius: 50, // Radius (Default 60)
-              //   scale: 100, // (Default: 1000)
-              // }}
-              //files={bgStreets}
             />
 
             <ShadowCatcher />
@@ -115,11 +102,11 @@ const Game = ({ options }) => {
               intensity={0.1}
             />
 
-            {/* <Background /> */}
-            
             <Player 
               options={options} 
-              arena={arena} 
+              levels={levels} 
+              levelName={levelName}
+              setLevelName={setLevelName}
               playerRef={playerRef}
               setHudInfo={setHudInfo} 
               setZombies={setZombies}

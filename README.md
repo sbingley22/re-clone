@@ -8,5 +8,4 @@ TODO:
 Add controller support
 Add Wave Spawn System
 Add HUD info
-Change background so player is constrained to screen only far plane is needed
-Turn game into "side scroller" where once enemies are defeated next area can be entered
+Auto fire at targets, space does kick or other special move

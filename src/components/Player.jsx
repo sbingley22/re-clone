@@ -11,7 +11,7 @@ const vec3b = new THREE.Vector3()
 const vec3c = new THREE.Vector3()
 const quat = new THREE.Quaternion()
 
-const Player = ({ options, arena, setHudInfo, playerRef, setZombies, zombieRefs }) => {
+const Player = ({ options, levels, levelName, setLevelName, setHudInfo, playerRef, setZombies, zombieRefs }) => {
   const [visibleNodes, setVisibleNodes] = useState(["Ana", "Pistol", "Shoes-HighTops", "Jacket", "Hair-Parted"])
   const anim = useRef("Idle")
   const [, getKeys] = useKeyboardControls()
@@ -19,6 +19,12 @@ const Player = ({ options, arena, setHudInfo, playerRef, setZombies, zombieRefs 
   const jumpForce = useRef(null)
   const moving = useRef("Idle")
   const targetedEnemy = useRef(null)
+
+  // Level change
+  useEffect(()=>{
+    const arena = levels.current[levelName].arena
+    group.current.position.x = arena.x1 + 1
+  }, [levelName, levels])
 
   // Alt Mode
   useEffect(()=>{
@@ -171,7 +177,7 @@ const Player = ({ options, arena, setHudInfo, playerRef, setZombies, zombieRefs 
 
       rotateToVec(dx, dy)
 
-      if (jump) shoot()
+      if (targetedEnemy.current) shoot()
       else {
         if (!isUnskippableAnimation()) {
           anim.current = "Pistol Aim"
@@ -206,11 +212,21 @@ const Player = ({ options, arena, setHudInfo, playerRef, setZombies, zombieRefs 
       const speed = 1.5 * delta * (runModifier? 2 : 1)
       const targetPosition = vec3.set(group.current.position.x + dx * speed, group.current.position.y, group.current.position.z + dy * speed)
 
-      console.log(targetPosition.x, arena.current.x1)
-      if (targetPosition.x < arena.current.x1) targetPosition.x = group.current.position.x
-      if (targetPosition.z < arena.current.z1) targetPosition.z = group.current.position.z
-      if (targetPosition.x > arena.current.x2) targetPosition.x =  group.current.position.x
-      if (targetPosition.z > arena.current.z2) targetPosition.z = group.current.position.z
+      const arena = levels.current[levelName].arena
+      if (targetPosition.z < arena.z1) targetPosition.z = group.current.position.z
+      if (targetPosition.z > arena.z2) targetPosition.z = group.current.position.z
+      if (targetPosition.x < arena.x1) targetPosition.x = group.current.position.x
+      if (targetPosition.x > arena.x2) {
+        // Stop player from moving
+        targetPosition.x =  group.current.position.x
+        // Go to next level?
+        if (zombieRefs.current.length < 1) {
+          const nextLevel = levels.current[levelName].next
+          if (nextLevel) {
+            setLevelName(nextLevel)
+          }  
+        }
+      }
 
       if (dx || dy) {
         rotateToVec(dx, dy)
