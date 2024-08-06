@@ -10,6 +10,7 @@ import Zombie from "./Zombie"
 import { v4 as uuidv4 } from 'uuid'
 import Slime from "./Slime"
 import { levelData } from "../assets/levels"
+import Gamepad from "react-gamepad"
 
 const Game = ({ options, levelName, setLevelName }) => {
   const containerRef = useRef()
@@ -24,11 +25,13 @@ const Game = ({ options, levelName, setLevelName }) => {
   const zombieRefs = useRef([])
   const [slimes, setSlimes] = useState([])
 
-  const addSlime = (x, z) => {
+  const addSlime = (x, z, lifeSpan = 5) => {
     const tempSlimes = [...slimes]
     tempSlimes.push({
       id: uuidv4(),
-      position: [x, 0, z]
+      position: [x, 0, z],
+      lifeSpan: lifeSpan,
+      scale: 1,
     })
     setSlimes(tempSlimes)
   }
@@ -54,6 +57,41 @@ const Game = ({ options, levelName, setLevelName }) => {
   else if (camFov === 10) camPos = [0,17,28]
   else if (camFov === 5) camPos = [0,25,55]
   else if (camFov === 1) camPos = [0,150,250]
+
+  const gamepad = useRef({
+    moveX: 0,
+    moveY: 0,
+    aimX: 0,
+    aimY: 0,
+    jump: false,
+  })
+
+  const handleGamepadButtonDown = (buttonName) => {
+    if (!buttonName) return
+    // console.log(`Button ${buttonName} pressed`)
+    // Handle button press
+    if (buttonName === "A") gamepad.current.jump = true
+  }
+
+  const handleGamepadButtonUp = (buttonName) => {
+    if (!buttonName) return
+    // console.log(`Button ${buttonName} released`)
+    // Handle button release
+    if (buttonName === "A") gamepad.current.jump = false
+  }
+
+  const handleGamepadAxisChange = (axisName, value) => {
+    console.log(`${axisName} : ${value}`)
+    // Handle axis movement
+    if (axisName === "LeftStickX") gamepad.current.moveX = value
+    else if (axisName === "LeftStickY") gamepad.current.moveY = value
+    else if (axisName === "RightStickX") gamepad.current.aimX = value
+    else if (axisName === "RightStickY") gamepad.current.aimY = value
+    else if (axisName === "LeftTrigger") {
+      if (value > 0.4) gamepad.current.jump = true
+      else gamepad.current.jump = false
+    }
+  }
 
   return (
     <div 
@@ -81,6 +119,11 @@ const Game = ({ options, levelName, setLevelName }) => {
         { name: "aimRight", keys: ["l", "L"] },
         ]}
       >
+        <Gamepad
+          onButtonDown={handleGamepadButtonDown}
+          onButtonUp={handleGamepadButtonUp}
+          onAxisChange={handleGamepadAxisChange}
+        >
         <Canvas
           camera={{
             position: camPos,
@@ -108,6 +151,7 @@ const Game = ({ options, levelName, setLevelName }) => {
               levelName={levelName}
               setLevelName={setLevelName}
               playerRef={playerRef}
+              gamepad={gamepad}
               setHudInfo={setHudInfo} 
               setZombies={setZombies}
               zombieRefs={zombieRefs}
@@ -130,6 +174,8 @@ const Game = ({ options, levelName, setLevelName }) => {
                 key={slime.id} 
                 id={slime.id}
                 position={slime.position} 
+                scale={slime.scale}
+                lifeSpan={slime.lifeSpan}
                 setSlimes={setSlimes}
                 playerRef={playerRef}
               />
@@ -137,6 +183,7 @@ const Game = ({ options, levelName, setLevelName }) => {
 
           </Suspense>
         </Canvas>
+        </Gamepad>
       </KeyboardControls>
 
       <Hud options={options} hudInfo={hudInfo} />

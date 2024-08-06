@@ -16,6 +16,8 @@ const Zombie = ({ id, position, playerRef, zombieRefs, setZombies, addSlime }) =
   const group = useRef()
   const moving = useRef("Idle")
   const attackCoolDown = useRef(0.2)
+  const speed = useRef(1)
+  const attackRange = useRef(0.5)
 
   // Set Zombie ref
   useEffect(()=>{
@@ -44,6 +46,8 @@ const Zombie = ({ id, position, playerRef, zombieRefs, setZombies, addSlime }) =
     if (a === "Land") return true
     if (a === "Pistol Fire") return true
     if (a === "Take Damage") return true
+    if (a === "Dying") return true
+    if (a === "Stunned") return true
 
     return false
   }
@@ -54,18 +58,26 @@ const Zombie = ({ id, position, playerRef, zombieRefs, setZombies, addSlime }) =
       return prevZombies.filter(zombie => zombie.id !== id)
     })
   }
+  const zombieDead = () => {
+    addSlime(group.current.position.x, group.current.position.z)
+    removeZombieById(id)
+  }
 
   const takeDamage = (dmg) => {
     if (!group.current) return
 
     group.current.health -= dmg
 
-    anim.current = "Take Damage"
+    const chance = Math.random()
+    if (chance > 0.8) anim.current = "Stunned"
+    else {
+      if (anim.current !== "Stunned") anim.current = "Take Damage"
+    }
 
     if (group.current.health <= 0) {
       // zombie dead 
-      addSlime(group.current.position.x, group.current.position.z)
-      removeZombieById(id)
+      anim.current = "Dying"
+      setTimeout(zombieDead, 1000)
     }
   }
 
@@ -73,6 +85,7 @@ const Zombie = ({ id, position, playerRef, zombieRefs, setZombies, addSlime }) =
   useFrame((state, delta) => {
     if (!group.current) return
     if (!playerRef.current) return
+    if (group.current.health <= 0) return
 
     // Check Flags
     if (group.current.dmgFlag) {
@@ -96,6 +109,8 @@ const Zombie = ({ id, position, playerRef, zombieRefs, setZombies, addSlime }) =
 
     // Enemy AI
     const logic = () => {
+      if (anim.current === "Stunned") return
+
       // Get player position etc
       const px = playerRef.current.position.x
       const pz = playerRef.current.position.z
@@ -112,7 +127,7 @@ const Zombie = ({ id, position, playerRef, zombieRefs, setZombies, addSlime }) =
       rotateToVec(pvx, pvz)
 
       // Move to Player
-      if (distance < 0.5) {
+      if (distance < attackRange.current) {
         // Attack player
         attackCoolDown.current -= delta
 
@@ -130,9 +145,10 @@ const Zombie = ({ id, position, playerRef, zombieRefs, setZombies, addSlime }) =
         }
       }
       else {
-        const speed = 0.5
-        const tempX = group.current.position.x + speed * pvx * delta
-        const tempZ = group.current.position.z + speed * pvz * delta
+        let tempSpeed = speed.current
+        if (anim.current === "Take Damage") tempSpeed /= 2
+        const tempX = group.current.position.x + tempSpeed * pvx * delta
+        const tempZ = group.current.position.z + tempSpeed * pvz * delta
         let canMove = true
 
         zombieRefs.current.forEach(z => {
@@ -159,7 +175,12 @@ const Zombie = ({ id, position, playerRef, zombieRefs, setZombies, addSlime }) =
           group.current.position.z = tempZ
 
           if (!isUnskippableAnimation()) {
-            anim.current = "Walking"
+            anim.current = "WalkingStagger"
+          }
+        }
+        else {
+          if (!isUnskippableAnimation()) {
+            anim.current = "Idle"
           }
         }
       }

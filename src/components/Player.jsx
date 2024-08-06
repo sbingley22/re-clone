@@ -11,7 +11,7 @@ const vec3b = new THREE.Vector3()
 const vec3c = new THREE.Vector3()
 const quat = new THREE.Quaternion()
 
-const Player = ({ options, levels, levelName, setLevelName, setHudInfo, playerRef, setZombies, zombieRefs }) => {
+const Player = ({ options, levels, levelName, setLevelName, setHudInfo, playerRef, gamepad, setZombies, zombieRefs }) => {
   const [visibleNodes, setVisibleNodes] = useState(["Ana", "Pistol", "Shoes-HighTops", "Jacket", "Hair-Parted"])
   const anim = useRef("Idle")
   const [, getKeys] = useKeyboardControls()
@@ -24,6 +24,8 @@ const Player = ({ options, levels, levelName, setLevelName, setHudInfo, playerRe
   useEffect(()=>{
     const arena = levels.current[levelName].arena
     group.current.position.x = arena.x1 + 1
+    if (group.current.position.z < arena.z1) group.current.position.z = arena.z1 + 0.5
+    if (group.current.position.z > arena.z2) group.current.position.z = arena.z2 - 0.5
   }, [levelName, levels])
 
   // Alt Mode
@@ -119,6 +121,8 @@ const Player = ({ options, levels, levelName, setLevelName, setHudInfo, playerRe
         if (!e.current) return
 
         const enemy = e.current
+        if (enemy.health <= 0) return
+        
         // Get enemy position
         const ex = enemy.position.x;
         const ez = enemy.position.z;
@@ -170,6 +174,8 @@ const Player = ({ options, levels, levelName, setLevelName, setHudInfo, playerRe
       else if (aimDown) dy = 1
       if (aimLeft) dx = -1
       else if (aimRight) dx = 1
+      if (gamepad.current.aimX) dx = gamepad.current.aimX
+      if (gamepad.current.aimY) dy = gamepad.current.aimY * -1
 
       const eLock = lockOnEnemy(dx, dy)
       dx = eLock.x
@@ -187,7 +193,7 @@ const Player = ({ options, levels, levelName, setLevelName, setHudInfo, playerRe
     const movement = () => {
       if (!group.current) return
       moving.current = "Idle"
-      if (aimDown || aimUp || aimLeft || aimRight) {
+      if (aimDown || aimUp || aimLeft || aimRight || Math.abs(gamepad.current.aimX) > 0.4 || Math.abs(gamepad.current.aimY) > 0.4) {
         aim()
         return
       }
@@ -195,18 +201,29 @@ const Player = ({ options, levels, levelName, setLevelName, setHudInfo, playerRe
       let dx = 0
       let dy = 0
 
+      // keyboard
       if (forward) dy = -1
       else if (backward) dy = 1
       if (left) dx = -1
       else if (right) dx = 1
-
       if (dx && dy) {
         dx *= 0.7
         dy *= 0.7
       }
+      // gamepad
+      const gpmx = gamepad.current.moveX
+      const gpmy = gamepad.current.moveY
+      const moveDeadZone = 0.3
+      if (Math.abs(gpmx) > moveDeadZone) dx = gpmx
+      if (Math.abs(gpmy) > moveDeadZone) dy = gpmy * -1
+
 
       // check for obstructions
       let runModifier = options.defaultRun === false ? shift : !shift
+      if (Math.abs(gpmx) > moveDeadZone || Math.abs(gpmy) > moveDeadZone) {
+        if (Math.abs(gpmx) > 0.8 || Math.abs(gpmy) > 0.8) runModifier = true
+        else runModifier = false
+      }
       const lowHealth = group.current.health < 50
       if (lowHealth) runModifier = false
       const speed = 1.5 * delta * (runModifier? 2 : 1)
@@ -262,7 +279,6 @@ const Player = ({ options, levels, levelName, setLevelName, setHudInfo, playerRe
 
       group.current.position.x = targetPosition.x
       group.current.position.z = targetPosition.z
-
     }
     movement()
     const jumping = () => {
@@ -270,7 +286,7 @@ const Player = ({ options, levels, levelName, setLevelName, setHudInfo, playerRe
         // player is grounded
         if (isUnskippableAnimation()) return
         if (aimDown || aimUp || aimLeft || aimRight) return
-        if (jump) {
+        if (jump || gamepad.current.jump) {
           jumpForce.current = 0.06
           anim.current = "Jump"
         }

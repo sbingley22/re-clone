@@ -9,7 +9,7 @@ export const levelData = {
     "arena": {
       "x1": -4,
       "x2": 4,
-      "z1": -3,
+      "z1": -4,
       "z2": 6
     },
     "img": streets1,
@@ -17,18 +17,34 @@ export const levelData = {
     "zombies": [
       {
         id: uuidv4(),
-        position: [2,0,2]
-      },
-      {
-        id: uuidv4(),
-        position: [1,0,0]
+        position: [2,0,0]
       },
     ],
     "slimes": [
       {
         id: uuidv4(),
-        position: [-2, 0, -2],
-      }
+        position: [-1, 0, -2],
+        lifeSpan: -99,
+        scale: 1.5,
+      },
+      {
+        id: uuidv4(),
+        position: [0, 0, -2.5],
+        lifeSpan: -99,
+        scale: 1.5,
+      },
+      {
+        id: uuidv4(),
+        position: [-0.5, 0, -2.25],
+        lifeSpan: -99,
+        scale: 1.5,
+      },
+      {
+        id: uuidv4(),
+        position: [0, 0, -0.5],
+        lifeSpan: -99,
+        scale: 1.5,
+      },
     ],
   },
   "streets-2": {
@@ -40,12 +56,22 @@ export const levelData = {
     },
     "img": streets2,
     "next": "streets-3",
+    "zombies": [
+      {
+        id: uuidv4(),
+        position: [2,0,2]
+      },
+      {
+        id: uuidv4(),
+        position: [1,0,0]
+      },
+    ],
   },
   "streets-3": {
     "arena": {
       "x1": -4,
       "x2": 4,
-      "z1": -3,
+      "z1": -1,
       "z2": 6
     },
     "img": streets3,
@@ -53,9 +79,9 @@ export const levelData = {
   },
   "streets-4": {
     "arena": {
-      "x1": -4,
+      "x1": -3,
       "x2": 4,
-      "z1": -3,
+      "z1": -1,
       "z2": 6
     },
     "img": streets4,
