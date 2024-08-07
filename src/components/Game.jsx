@@ -11,6 +11,7 @@ import { v4 as uuidv4 } from 'uuid'
 import Slime from "./Slime"
 import { levelData } from "../assets/levels"
 import Gamepad from "react-gamepad"
+import BloodManager from "./BloodManager"
 
 const Game = ({ options, levelName, setLevelName }) => {
   const containerRef = useRef()
@@ -25,6 +26,7 @@ const Game = ({ options, levelName, setLevelName }) => {
   ])
   const zombieRefs = useRef([])
   const [slimes, setSlimes] = useState([])
+  const splatterFlag = useRef(null)
 
   const addSlime = (x, z, lifeSpan = 5, scale = 1) => {
     const tempSlimes = [...slimes]
@@ -173,6 +175,7 @@ const Game = ({ options, levelName, setLevelName }) => {
               setHudInfo={setHudInfo} 
               setZombies={setZombies}
               zombieRefs={zombieRefs}
+              splatterFlag={splatterFlag}
             />
 
             {zombies.map(zomb => (
@@ -186,6 +189,7 @@ const Game = ({ options, levelName, setLevelName }) => {
                 playerRef={playerRef}
                 setZombies={setZombies}
                 addSlime={addSlime}
+                splatterFlag={splatterFlag}
               />
             ))}
             
@@ -200,6 +204,8 @@ const Game = ({ options, levelName, setLevelName }) => {
                 playerRef={playerRef}
               />
             ))}
+
+            <BloodManager splatterFlag={splatterFlag} />
 
           </Suspense>
         </Canvas>

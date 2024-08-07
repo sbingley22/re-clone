@@ -3,10 +3,10 @@ import Game from "./components/Game"
 import MainMenu from "./components/MainMenu"
 
 function App() {
-  const [mode, setMode] = useState(0)
+  const [mode, setMode] = useState(1)
   // eslint-disable-next-line no-unused-vars
   const [options, setOptions] = useState({
-    altMode: false,
+    altMode: true,
     defaultRun: true
   })
   const [levelName, setLevelName] = useState("streets-1")

@@ -11,3 +11,8 @@ then run npm i
 git subtree push --prefix dist origin gh-pages
 
 TODO:
+Add forest levels
+Add score 
+Add game over score screen
+Add game won score screen
+Add sounds

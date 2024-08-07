@@ -42,15 +42,18 @@ const Slime = ({ id, position, scale=1, lifeSpan=6, setSlimes, playerRef }) => {
     }
     
     if (material.current) {
-      material.current.opacity = lifeTime.current/20 + 0.5
-      const colValue = 0.75
-      material.current.color.r = colValue
-      material.current.color.g = colValue / 2
-      material.current.color.b = colValue
+      material.current.opacity = lifeTime.current / lifeSpan
+      if (material.current.opacity < 0.5) material.current.opacity = 0.5
+      if (lifeSpan === -99) material.current.opacity = 0.95
+
+      const colValue = 0.25
+      material.current.color.r = colValue * 1.0
+      material.current.color.g = colValue * 1.5
+      material.current.color.b = colValue * 0.1
     }
 
     const distance = group.current.position.distanceTo(playerRef.current.position)
-    if (distance < 0.5) {
+    if (distance < scale/2) {
       playerRef.current.dmgFlag = {
         dmg: 10,
         position: null,

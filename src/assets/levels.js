@@ -31,19 +31,19 @@ export const levelData = {
       },
       {
         id: uuidv4(),
-        position: [0, 0, -2.5],
+        position: [0, 0, -3.5],
         lifeSpan: -99,
         scale: 1.5,
       },
       {
         id: uuidv4(),
-        position: [-0.5, 0, -2.25],
+        position: [-2.5, 0, -2.25],
         lifeSpan: -99,
         scale: 1.5,
       },
       {
         id: uuidv4(),
-        position: [0, 0, -0.5],
+        position: [0, 0, 2.5],
         lifeSpan: -99,
         scale: 1.5,
       },
@@ -84,6 +84,32 @@ export const levelData = {
         health: 100,
       },
     ],
+    "slimes": [
+      {
+        id: uuidv4(),
+        position: [1, 0, -2],
+        lifeSpan: -99,
+        scale: 1.9,
+      },
+      {
+        id: uuidv4(),
+        position: [-1, 0, -2.5],
+        lifeSpan: -99,
+        scale: 2.5,
+      },
+      {
+        id: uuidv4(),
+        position: [2.5, 0, -2.25],
+        lifeSpan: -99,
+        scale: 1.8,
+      },
+      {
+        id: uuidv4(),
+        position: [0, 0, 2.5],
+        lifeSpan: -99,
+        scale: 1.7,
+      },
+    ],
   },
   "streets-3": {
     "arena": {
@@ -103,6 +129,40 @@ export const levelData = {
       "z2": 6
     },
     "img": streets4,
-    "next": null
+    "next": null,
+    "zombies": [
+      {
+        id: uuidv4(),
+        position: [3,0,0],
+        type: "Neutrophil",
+        health: 500,
+      },
+    ],
+    "slimes": [
+      {
+        id: uuidv4(),
+        position: [-1, 0, -1],
+        lifeSpan: -99,
+        scale: 1.5,
+      },
+      {
+        id: uuidv4(),
+        position: [0, 0, 2.5],
+        lifeSpan: -99,
+        scale: 1.9,
+      },
+      {
+        id: uuidv4(),
+        position: [2.5, 0, -0.25],
+        lifeSpan: -99,
+        scale: 3.5,
+      },
+      {
+        id: uuidv4(),
+        position: [0, 0, 1.5],
+        lifeSpan: -99,
+        scale: 2.5,
+      },
+    ],
   },
 }

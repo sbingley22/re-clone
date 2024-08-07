@@ -11,7 +11,7 @@ const vec3b = new THREE.Vector3()
 const vec3c = new THREE.Vector3()
 const quat = new THREE.Quaternion()
 
-const Player = ({ options, levels, levelName, setLevelName, setHudInfo, playerRef, gamepad, zombieRefs }) => {
+const Player = ({ options, levels, levelName, setLevelName, setHudInfo, playerRef, gamepad, zombieRefs, splatterFlag }) => {
   const [visibleNodes, setVisibleNodes] = useState(["Ana", "Pistol", "Shoes-HighTops", "Jacket", "Hair-Parted"])
   const anim = useRef("Idle")
   const [, getKeys] = useKeyboardControls()
@@ -66,6 +66,11 @@ const Player = ({ options, levels, levelName, setLevelName, setHudInfo, playerRe
     group.current.health -= flag.dmg
 
     anim.current = "Take Damage"
+
+    splatterFlag.current = {
+      pos: group.current.position,
+      color: 0x772211,
+    }
 
     if (group.current.health <= 0) {
       // game over

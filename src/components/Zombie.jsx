@@ -10,13 +10,13 @@ const vec3b = new THREE.Vector3()
 const vec3c = new THREE.Vector3()
 const quat = new THREE.Quaternion()
 
-const Zombie = ({ id, position=[0,0,0], type="ZMale", health=100, playerRef, zombieRefs, setZombies, addSlime }) => {
+const Zombie = ({ id, position=[0,0,0], type="ZMale", health=100, playerRef, zombieRefs, setZombies, addSlime, splatterFlag }) => {
   const [visibleNodes, setVisibleNodes] = useState(["ZMale"])
   const anim = useRef("Idle")
   const group = useRef()
   const moving = useRef("Idle")
-  const attackCoolDown = useRef(0.2)
   const speed = useRef(1)
+  const attackCoolDown = useRef(0.2)
   const attackRange = useRef(0.95)
 
   // Set Zombie ref
@@ -43,12 +43,21 @@ const Zombie = ({ id, position=[0,0,0], type="ZMale", health=100, playerRef, zom
       speed.current = 1
       attackRange.current = 1.0
       attackCoolDown.current = 0.5
+      group.current.scale.setScalar(1.05)
     }
     else if (type === "ZFem") {
       setVisibleNodes(["ZFem"])
-      speed.current = 1.2
+      speed.current = 1.3
       attackRange.current = 0.8
       attackCoolDown.current = 0.4
+      group.current.scale.setScalar(0.95)
+    }
+    else if (type === "Neutrophil") {
+      setVisibleNodes(["Neutrophil", "NeutroNet", "NeutroRos"])
+      speed.current = 1.4
+      attackRange.current = 1.7
+      attackCoolDown.current = 0.5
+      group.current.scale.setScalar(1.4)
     }
   }, [type])
 
@@ -90,6 +99,11 @@ const Zombie = ({ id, position=[0,0,0], type="ZMale", health=100, playerRef, zom
       }
     }
     group.current.health -= flag.dmg
+
+    splatterFlag.current = {
+      pos: group.current.position,
+      color: 0x556611,
+    }
 
     const chance = Math.random()
     if (chance > 0.8) anim.current = "Stunned"
@@ -189,7 +203,7 @@ const Zombie = ({ id, position=[0,0,0], type="ZMale", health=100, playerRef, zom
         attackCoolDown.current -= delta
 
         if (attackCoolDown.current <= 0) {
-          if (!isUnskippableAnimation()) {
+          if (!isUnskippableAnimation() || ["Take Damage"].includes(anim.current)) {
             const chance = Math.random()
             anim.current = "Fight Jab"
             if (chance > 0.5) anim.current = "Fight Straight"
@@ -199,7 +213,7 @@ const Zombie = ({ id, position=[0,0,0], type="ZMale", health=100, playerRef, zom
               playerRef.current.dmgFlag = {
                 dmg: 20,
                 pos: group.current.position,
-                range: 1.0
+                range: attackRange.current
               }
             }, 250)
           }
@@ -244,7 +258,7 @@ const Zombie = ({ id, position=[0,0,0], type="ZMale", health=100, playerRef, zom
 
           if (!isUnskippableAnimation()) {
             anim.current = "WalkingStagger"
-          }
+          } 
         }
         else {
           if (!isUnskippableAnimation()) {
