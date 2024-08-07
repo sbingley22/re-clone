@@ -192,10 +192,10 @@ const Player = ({ options, levels, levelName, setLevelName, setHudInfo, playerRe
 
       // If no enemy is close enough in the direction, return the original direction
       if (!closestEnemy) {
-        return { x: dx, y: dy };
+        return { x: dx, y: dy }
       }
 
-      return closestEnemy;
+      return closestEnemy
     }
     const aim = () => {
       // console.log("aiming")
@@ -242,7 +242,6 @@ const Player = ({ options, levels, levelName, setLevelName, setHudInfo, playerRe
         return
       }
       if (anim.current === "Fight Roundhouse") return
-      // console.log("moving")
 
       let dx = 0
       let dy = 0
@@ -333,13 +332,13 @@ const Player = ({ options, levels, levelName, setLevelName, setHudInfo, playerRe
         if (isUnskippableAnimation()) return
         if (aimDown || aimUp || aimLeft || aimRight) return
         if (jump || gamepad.current.jump) {
-          jumpForce.current = 0.06
+          jumpForce.current = 0.08
           anim.current = "Jump"
         }
       }
       else {
         // player is jumping
-        jumpForce.current -= delta * 0.1
+        jumpForce.current -= delta * 0.15
         group.current.position.y += jumpForce.current
         if (group.current.position.y <= 0) {
           // player has landed
@@ -351,7 +350,9 @@ const Player = ({ options, levels, levelName, setLevelName, setHudInfo, playerRe
     }
     jumping()
 
-    // console.log(anim.current)
+    if (interact) {
+      console.log(zombieRefs.current)
+    }
   })
 
   return (

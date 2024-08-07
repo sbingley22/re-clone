@@ -21,6 +21,8 @@ const Hud = ({ options, hudInfo }) => {
         style={{width: imgSize, height: imgSize, backgroundColor: bgCol}}
         src={hudImg} 
       />
+
+      <p className="absolute bottom-0 left-0 m-2 text-green-500">{hudInfo.msg}</p>
     </div>
   )
 }

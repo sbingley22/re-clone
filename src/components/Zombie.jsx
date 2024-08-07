@@ -81,6 +81,7 @@ const Zombie = ({ id, position=[0,0,0], type="ZMale", health=100, playerRef, zom
 
   const takeDamage = (flag) => {
     if (!group.current) return
+    if (flag.dmg === null) return
 
     if (flag.pos) {
       if (flag.range) {
@@ -111,7 +112,7 @@ const Zombie = ({ id, position=[0,0,0], type="ZMale", health=100, playerRef, zom
       pushBack = 1
     }
 
-    takeDamage(dmg)
+    takeDamage({dmg: dmg})
 
     // Push zombie back
     const px = playerRef.current.position.x

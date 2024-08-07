@@ -3,17 +3,17 @@ import Game from "./components/Game"
 import MainMenu from "./components/MainMenu"
 
 function App() {
-  const [mode, setMode] = useState(1)
+  const [mode, setMode] = useState(0)
   // eslint-disable-next-line no-unused-vars
   const [options, setOptions] = useState({
-    altMode: true,
+    altMode: false,
     defaultRun: true
   })
   const [levelName, setLevelName] = useState("streets-1")
   
   if (mode === 0) return (
     <div className="dynamic-width">
-      <MainMenu setMode={setMode} />
+      <MainMenu setMode={setMode} setLevelName={setLevelName} />
     </div>
   )
 

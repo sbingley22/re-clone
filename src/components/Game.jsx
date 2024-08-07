@@ -18,6 +18,7 @@ const Game = ({ options, levelName, setLevelName }) => {
 
   const [hudInfo, setHudInfo] = useState({
     health: 100,
+    msg: "",
   })
   const playerRef = useRef(null)
   const [zombies, setZombies] = useState([
@@ -36,6 +37,20 @@ const Game = ({ options, levelName, setLevelName }) => {
     setSlimes(tempSlimes)
   }
 
+  const updateMsg = (msg) => {
+    setHudInfo(prev => ({
+      ...prev,
+      msg: msg,
+    }))
+  }
+
+  // Level Complete
+  useEffect(()=>{
+    if (zombies.length > 0) return
+
+    if (levels.current[levelName].next) updateMsg("Next Stage >>")
+  }, [levelName, zombies])
+
   // Change Level
   useEffect(()=>{
     const newLevel = levels.current[levelName]
@@ -48,6 +63,9 @@ const Game = ({ options, levelName, setLevelName }) => {
     else {
       setSlimes([])
     }
+
+    updateMsg("")
+
   }, [levelName])
 
   let camFov = 5

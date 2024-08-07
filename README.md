@@ -10,4 +10,3 @@ then run npm i
 
 TODO:
 Add HUD info
-Space does kick when aiming

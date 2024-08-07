@@ -20,7 +20,7 @@ const Slime = ({ id, position, scale=1, lifeSpan=6, setSlimes, playerRef }) => {
 
   useEffect(()=>{
     if (lifeSpan === -99) {
-      lifeTime.current = 10
+      lifeTime.current = 5
     }
   }, [lifeSpan])
 
