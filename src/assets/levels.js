@@ -17,7 +17,9 @@ export const levelData = {
     "zombies": [
       {
         id: uuidv4(),
-        position: [2,0,0]
+        position: [2,0,0],
+        type: "ZFem",
+        health: 100,
       },
     ],
     "slimes": [
@@ -59,11 +61,27 @@ export const levelData = {
     "zombies": [
       {
         id: uuidv4(),
-        position: [2,0,2]
+        position: [2,0,2],
+        type: "ZMale",
+        health: 100,
       },
       {
         id: uuidv4(),
-        position: [1,0,0]
+        position: [1,0,0],
+        type: "ZFem",
+        health: 100,
+      },
+      {
+        id: uuidv4(),
+        position: [5,0,2],
+        type: "ZMale",
+        health: 100,
+      },
+      {
+        id: uuidv4(),
+        position: [8,0,0],
+        type: "ZFem",
+        health: 100,
       },
     ],
   },

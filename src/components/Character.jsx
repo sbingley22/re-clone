@@ -61,23 +61,35 @@ const Character = ({ visibleNodes, anim, moving = "Idle" }) => {
       actions[osa].repetitions = 1
     })
 
+    // eslint-disable-next-line no-unused-vars
     mixer.addEventListener("finished", (e) => {
-      //console.log(anim.current, lastAnim.current, e)
-      if (lastAnim.current === "Pistol Fire") {
+      const action = e.action.getClip().name
+      // console.log(action)
+
+      if (action === "Pistol Fire") {
+        if (anim.current === "Fight Roundhouse") return
         anim.current = "Pistol Aim"
         return
       }
-      if (lastAnim.current === "Jump") {
+      if (action === "Fight Roundhouse") {
+        anim.current = "Pistol Aim"
+        return
+      }
+      if (action === "Jump") {
         anim.current = "Fall"
         return
       }
-      if (lastAnim.current === "Land") {
+      if (action === "Land") {
         anim.current = moving.current 
         return
       }
-      if (lastAnim.current === "Dying") {
+      if (action === "Take Damage") {
+        if (moving.current) anim.current = moving.current
+      }
+      if (action === "Dying") {
         return
       }
+
       anim.current = "Idle"
     })
 
@@ -89,8 +101,9 @@ const Character = ({ visibleNodes, anim, moving = "Idle" }) => {
   const updateAnimations = () => {
     if (anim.current === lastAnim.current) return
 
-    actions[lastAnim.current].fadeOut(0.25)
-    actions[anim.current].reset().fadeIn(0.25).play()
+    const fadeTime = 0.2
+    actions[lastAnim.current].fadeOut(fadeTime)
+    actions[anim.current].reset().fadeIn(fadeTime).play()
 
     lastAnim.current = anim.current
   }

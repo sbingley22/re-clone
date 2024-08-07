@@ -25,13 +25,13 @@ const Game = ({ options, levelName, setLevelName }) => {
   const zombieRefs = useRef([])
   const [slimes, setSlimes] = useState([])
 
-  const addSlime = (x, z, lifeSpan = 5) => {
+  const addSlime = (x, z, lifeSpan = 5, scale = 1) => {
     const tempSlimes = [...slimes]
     tempSlimes.push({
       id: uuidv4(),
       position: [x, 0, z],
       lifeSpan: lifeSpan,
-      scale: 1,
+      scale: scale,
     })
     setSlimes(tempSlimes)
   }
@@ -162,6 +162,8 @@ const Game = ({ options, levelName, setLevelName }) => {
                 key={zomb.id} 
                 id={zomb.id}
                 position={zomb.position} 
+                type={zomb.type}
+                health={zomb.health}
                 zombieRefs={zombieRefs}
                 playerRef={playerRef}
                 setZombies={setZombies}

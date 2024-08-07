@@ -51,7 +51,11 @@ const Slime = ({ id, position, scale=1, lifeSpan=6, setSlimes, playerRef }) => {
 
     const distance = group.current.position.distanceTo(playerRef.current.position)
     if (distance < 0.5) {
-      playerRef.current.dmgFlag = 10
+      playerRef.current.dmgFlag = {
+        dmg: 10,
+        position: null,
+        range: null,
+      }
       removeSlimeById(id)
     }
   })

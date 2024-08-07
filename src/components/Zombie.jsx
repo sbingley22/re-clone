@@ -5,19 +5,19 @@ import Character from "./Character"
 import { useEffect, useRef, useState } from "react"
 import { useFrame } from "@react-three/fiber"
 
-const vec3 = new THREE.Vector3()
+// const vec3 = new THREE.Vector3()
 const vec3b = new THREE.Vector3()
 const vec3c = new THREE.Vector3()
 const quat = new THREE.Quaternion()
 
-const Zombie = ({ id, position, playerRef, zombieRefs, setZombies, addSlime }) => {
+const Zombie = ({ id, position=[0,0,0], type="ZMale", health=100, playerRef, zombieRefs, setZombies, addSlime }) => {
   const [visibleNodes, setVisibleNodes] = useState(["ZMale"])
   const anim = useRef("Idle")
   const group = useRef()
   const moving = useRef("Idle")
   const attackCoolDown = useRef(0.2)
   const speed = useRef(1)
-  const attackRange = useRef(0.5)
+  const attackRange = useRef(0.95)
 
   // Set Zombie ref
   useEffect(()=>{
@@ -35,6 +35,22 @@ const Zombie = ({ id, position, playerRef, zombieRefs, setZombies, addSlime }) =
 
     //console.log(zombieRefs.current)
   }, [group, id, zombieRefs])
+
+  // Zombie type
+  useEffect(()=>{
+    if (type === "ZMale") {
+      setVisibleNodes(["ZMale"])
+      speed.current = 1
+      attackRange.current = 1.0
+      attackCoolDown.current = 0.5
+    }
+    else if (type === "ZFem") {
+      setVisibleNodes(["ZFem"])
+      speed.current = 1.2
+      attackRange.current = 0.8
+      attackCoolDown.current = 0.4
+    }
+  }, [type])
 
   const isUnskippableAnimation = () => {
     const a = anim.current
@@ -63,10 +79,16 @@ const Zombie = ({ id, position, playerRef, zombieRefs, setZombies, addSlime }) =
     removeZombieById(id)
   }
 
-  const takeDamage = (dmg) => {
+  const takeDamage = (flag) => {
     if (!group.current) return
 
-    group.current.health -= dmg
+    if (flag.pos) {
+      if (flag.range) {
+        const distance = group.current.position.distanceTo(flag.pos)
+        if (distance > flag.range) return
+      }
+    }
+    group.current.health -= flag.dmg
 
     const chance = Math.random()
     if (chance > 0.8) anim.current = "Stunned"
@@ -81,6 +103,32 @@ const Zombie = ({ id, position, playerRef, zombieRefs, setZombies, addSlime }) =
     }
   }
 
+  const kicked = () => {
+    let dmg = 1
+    let pushBack = 0.5
+    if (anim.current === "Stunned") {
+      dmg = 50
+      pushBack = 1
+    }
+
+    takeDamage(dmg)
+
+    // Push zombie back
+    const px = playerRef.current.position.x
+    const pz = playerRef.current.position.z
+    const zx = group.current.position.x
+    const zz = group.current.position.z
+    const dx = zx - px
+    const dz = zz - pz
+
+    const distance = Math.sqrt(dx * dx + dz * dz)
+    const ndx = dx / distance
+    const ndz = dz / distance
+
+    group.current.position.x += ndx * pushBack
+    group.current.position.z += ndz * pushBack
+  }
+
   // Game Loop
   useFrame((state, delta) => {
     if (!group.current) return
@@ -88,6 +136,14 @@ const Zombie = ({ id, position, playerRef, zombieRefs, setZombies, addSlime }) =
     if (group.current.health <= 0) return
 
     // Check Flags
+    if (group.current.actionFlag) {
+      const flag = group.current.actionFlag
+      if (flag === "kicked") {
+        kicked()
+      }
+
+      group.current.actionFlag = null
+    }
     if (group.current.dmgFlag) {
       takeDamage(group.current.dmgFlag)
       group.current.dmgFlag = null
@@ -133,9 +189,18 @@ const Zombie = ({ id, position, playerRef, zombieRefs, setZombies, addSlime }) =
 
         if (attackCoolDown.current <= 0) {
           if (!isUnskippableAnimation()) {
+            const chance = Math.random()
             anim.current = "Fight Jab"
+            if (chance > 0.5) anim.current = "Fight Straight"
+
             attackCoolDown.current = 1
-            playerRef.current.dmgFlag = 20
+            setTimeout(()=>{
+              playerRef.current.dmgFlag = {
+                dmg: 20,
+                pos: group.current.position,
+                range: 1.0
+              }
+            }, 250)
           }
         }
         else {
@@ -145,6 +210,8 @@ const Zombie = ({ id, position, playerRef, zombieRefs, setZombies, addSlime }) =
         }
       }
       else {
+        if (["Fight Jab", "Fight Straight"].includes(anim.current)) return
+
         let tempSpeed = speed.current
         if (anim.current === "Take Damage") tempSpeed /= 2
         const tempX = group.current.position.x + tempSpeed * pvx * delta
@@ -192,8 +259,10 @@ const Zombie = ({ id, position, playerRef, zombieRefs, setZombies, addSlime }) =
   return (
     <group 
       ref={group}
-      health={100}
+      name="zombie"
+      health={health}
       position={position}
+      actionFlag={null}
       dmgFlag={null}
     >
       <Character 

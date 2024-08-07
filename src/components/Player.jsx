@@ -11,7 +11,7 @@ const vec3b = new THREE.Vector3()
 const vec3c = new THREE.Vector3()
 const quat = new THREE.Quaternion()
 
-const Player = ({ options, levels, levelName, setLevelName, setHudInfo, playerRef, gamepad, setZombies, zombieRefs }) => {
+const Player = ({ options, levels, levelName, setLevelName, setHudInfo, playerRef, gamepad, zombieRefs }) => {
   const [visibleNodes, setVisibleNodes] = useState(["Ana", "Pistol", "Shoes-HighTops", "Jacket", "Hair-Parted"])
   const anim = useRef("Idle")
   const [, getKeys] = useKeyboardControls()
@@ -48,14 +48,22 @@ const Player = ({ options, levels, levelName, setLevelName, setHudInfo, playerRe
     if (a === "Land") return true
     if (a === "Pistol Fire") return true
     if (a === "Take Damage") return true
+    if (a === "Dying") return true
+    if (a === "Stunned") return true
 
     return false
   }
 
-  const takeDamage = (dmg) => {
+  const takeDamage = (flag) => {
     if (!group.current) return
 
-    group.current.health -= dmg
+    if (flag.pos) {
+      if (flag.range) {
+        const distance = group.current.position.distanceTo(flag.pos)
+        if (distance > flag.range) return
+      }
+    }
+    group.current.health -= flag.dmg
 
     anim.current = "Take Damage"
 
@@ -82,6 +90,9 @@ const Player = ({ options, levels, levelName, setLevelName, setHudInfo, playerRe
     const { forward, backward, left, right, jump, interact, inventory, shift, aimUp, aimLeft, aimRight, aimDown } = getKeys()
 
     // Check Flags
+    if (group.current.actionFlag) {
+      group.current.actionFlag = null
+    }
     if (group.current.dmgFlag) {
       takeDamage(group.current.dmgFlag)
       group.current.dmgFlag = null
@@ -100,13 +111,35 @@ const Player = ({ options, levels, levelName, setLevelName, setHudInfo, playerRe
       currentQuaternion.slerp(targetQuaternion, 0.1)
       group.current.quaternion.copy(currentQuaternion)
     }
-    const shoot = () => {
-      if (!isUnskippableAnimation()) {
-        anim.current = "Pistol Fire"
+    const kick = () => {
+      let canKick = true
+      if (isUnskippableAnimation()) canKick = false
+      if (anim.current === "Pistol Fire") canKick = true
 
-        if (targetedEnemy.current) {
-          const zombie = zombieRefs.current.find(z => z.current.id === targetedEnemy.current)
-          zombie.current.dmgFlag = 20
+      if (!canKick) return
+
+      if (targetedEnemy.current) {
+        const zombie = zombieRefs.current.find(z => z.current.id === targetedEnemy.current)
+        if (zombie.current.position.distanceTo(group.current.position) < 2.0) { 
+          setTimeout(() => { 
+            zombie.current.actionFlag = "kicked"
+          }, 350)
+        }
+      }
+
+      anim.current = "Fight Roundhouse"
+    }
+    const shoot = () => {
+      if (isUnskippableAnimation()) return
+      // console.log(anim.current)
+      anim.current = "Pistol Fire"
+
+      if (targetedEnemy.current) {
+        const zombie = zombieRefs.current.find(z => z.current.id === targetedEnemy.current)
+        zombie.current.dmgFlag = {
+          dmg: 20,
+          position: group.current.position,
+          range: null,
         }
       }
     }
@@ -165,6 +198,7 @@ const Player = ({ options, levels, levelName, setLevelName, setHudInfo, playerRe
       return closestEnemy;
     }
     const aim = () => {
+      // console.log("aiming")
       moving.current = "Pistol Aim"
       if (jumpForce.current !== null) return
       let dx = 0
@@ -183,9 +217,19 @@ const Player = ({ options, levels, levelName, setLevelName, setHudInfo, playerRe
 
       rotateToVec(dx, dy)
 
-      if (targetedEnemy.current) shoot()
+      // console.log(targetedEnemy.current)
+      if (targetedEnemy.current) {
+        if (jump || gamepad.current.jump) {
+          // console.log("kicking")
+          kick()
+        } else {
+          // console.log("shooting")
+          shoot()
+        }
+      } 
       else {
         if (!isUnskippableAnimation()) {
+          // console.log("aiming")
           anim.current = "Pistol Aim"
         }
       }
@@ -197,6 +241,8 @@ const Player = ({ options, levels, levelName, setLevelName, setHudInfo, playerRe
         aim()
         return
       }
+      if (anim.current === "Fight Roundhouse") return
+      // console.log("moving")
 
       let dx = 0
       let dy = 0
@@ -305,13 +351,16 @@ const Player = ({ options, levels, levelName, setLevelName, setHudInfo, playerRe
     }
     jumping()
 
+    // console.log(anim.current)
   })
 
   return (
     <group 
       ref={group}
       health={100}
+      actionFlag={null}
       dmgFlag={null}
+      positionFlag={null}
     >
       <Character 
         visibleNodes={visibleNodes}
