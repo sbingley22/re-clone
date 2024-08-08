@@ -101,7 +101,7 @@ const Character = ({ visibleNodes, anim, moving = "Idle" }) => {
   const updateAnimations = () => {
     if (anim.current === lastAnim.current) return
 
-    const fadeTime = 0.2
+    const fadeTime = 0.1
     actions[lastAnim.current].fadeOut(fadeTime)
     actions[anim.current].reset().fadeIn(fadeTime).play()
 

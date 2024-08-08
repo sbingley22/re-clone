@@ -160,6 +160,40 @@ export const levelData = {
     },
     "img": streets1,
     "next": "streets-5",
+    "zombies": [
+      {
+        id: uuidv4(),
+        position: [2,0,0],
+        type: "ZFem",
+        health: 100,
+      },
+    ],
+    "slimes": [
+      {
+        id: uuidv4(),
+        position: [-1, 0, -1],
+        lifeSpan: -99,
+        scale: 1.5,
+      },
+      {
+        id: uuidv4(),
+        position: [0, 0, 3.5],
+        lifeSpan: -99,
+        scale: 3.5,
+      },
+      {
+        id: uuidv4(),
+        position: [-1.5, 0, 2.25],
+        lifeSpan: -99,
+        scale: 2.5,
+      },
+      {
+        id: uuidv4(),
+        position: [3, 0, 2.5],
+        lifeSpan: -99,
+        scale: 2.5,
+      },
+    ],
   },
   "streets-5": {
     "arena": {

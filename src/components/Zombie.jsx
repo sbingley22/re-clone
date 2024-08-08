@@ -10,7 +10,7 @@ const vec3b = new THREE.Vector3()
 const vec3c = new THREE.Vector3()
 const quat = new THREE.Quaternion()
 
-const Zombie = ({ id, position=[0,0,0], type="ZMale", health=100, playerRef, zombieRefs, setZombies, addSlime, splatterFlag }) => {
+const Zombie = ({ id, position=[0,0,0], type="ZMale", health=100, playerRef, zombieRefs, setZombies, addSlime, splatterFlag, score }) => {
   const [visibleNodes, setVisibleNodes] = useState(["ZMale"])
   const anim = useRef("Idle")
   const group = useRef()
@@ -86,6 +86,7 @@ const Zombie = ({ id, position=[0,0,0], type="ZMale", health=100, playerRef, zom
   const zombieDead = () => {
     addSlime(group.current.position.x, group.current.position.z)
     removeZombieById(id)
+    score.current += 10
   }
 
   const takeDamage = (flag) => {

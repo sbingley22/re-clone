@@ -13,7 +13,7 @@ import { levelData } from "../assets/levels"
 import Gamepad from "react-gamepad"
 import BloodManager from "./BloodManager"
 
-const Game = ({ options, levelName, setLevelName }) => {
+const Game = ({ setMode, options, levelName, setLevelName, score }) => {
   const containerRef = useRef()
   const levels = useRef(levelData)
 
@@ -67,8 +67,9 @@ const Game = ({ options, levelName, setLevelName }) => {
     }
 
     updateMsg("")
+    score.current += 100
 
-  }, [levelName])
+  }, [levelName, score])
 
   let camFov = 5
   let camPos = [0, 25, 55]
@@ -166,6 +167,7 @@ const Game = ({ options, levelName, setLevelName }) => {
             />
 
             <Player 
+              setMode={setMode}
               options={options} 
               levels={levels} 
               levelName={levelName}
@@ -190,6 +192,7 @@ const Game = ({ options, levelName, setLevelName }) => {
                 setZombies={setZombies}
                 addSlime={addSlime}
                 splatterFlag={splatterFlag}
+                score={score}
               />
             ))}
             

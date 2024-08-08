@@ -11,7 +11,7 @@ const vec3b = new THREE.Vector3()
 const vec3c = new THREE.Vector3()
 const quat = new THREE.Quaternion()
 
-const Player = ({ options, levels, levelName, setLevelName, setHudInfo, playerRef, gamepad, zombieRefs, splatterFlag }) => {
+const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo, playerRef, gamepad, zombieRefs, splatterFlag }) => {
   const [visibleNodes, setVisibleNodes] = useState(["Ana", "Pistol", "Shoes-HighTops", "Jacket", "Hair-Parted"])
   const anim = useRef("Idle")
   const [, getKeys] = useKeyboardControls()
@@ -74,7 +74,10 @@ const Player = ({ options, levels, levelName, setLevelName, setHudInfo, playerRe
 
     if (group.current.health <= 0) {
       // game over
-      console.log("Game Over")
+      anim.current = "Dying"
+      setTimeout(()=>{
+        setMode(8)
+      }, 1000)
     }
 
     setHudInfo(prev => ({
@@ -90,6 +93,7 @@ const Player = ({ options, levels, levelName, setLevelName, setHudInfo, playerRe
     if (!playerRef.current) {
       playerRef.current = group.current
     }
+    if (group.current.health <= 0) return
 
     // eslint-disable-next-line no-unused-vars
     const { forward, backward, left, right, jump, interact, inventory, shift, aimUp, aimLeft, aimRight, aimDown } = getKeys()
@@ -292,6 +296,9 @@ const Player = ({ options, levels, levelName, setLevelName, setHudInfo, playerRe
           if (nextLevel) {
             setLevelName(nextLevel)
           }  
+          else {
+            setMode(9)
+          }
         }
       }
 

@@ -11,9 +11,6 @@ then run npm i
 git subtree push --prefix dist origin gh-pages
 
 TODO:
-Add score 
-Add game over score screen
-Add game won score screen
 Add sounds
 Add projectile zombies?
 Add crawler zombie
