@@ -9,7 +9,8 @@ function App() {
     altMode: true,
     defaultRun: true
   })
-  const [levelName, setLevelName] = useState("streets-1")
+  const [levelName, setLevelName] = useState("woods-1")
+  // const [levelName, setLevelName] = useState("streets-1")
   
   if (mode === 0) return (
     <div className="dynamic-width">

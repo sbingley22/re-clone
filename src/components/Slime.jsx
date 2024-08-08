@@ -44,7 +44,7 @@ const Slime = ({ id, position, scale=1, lifeSpan=6, setSlimes, playerRef }) => {
     if (material.current) {
       material.current.opacity = lifeTime.current / lifeSpan
       if (material.current.opacity < 0.5) material.current.opacity = 0.5
-      if (lifeSpan === -99) material.current.opacity = 0.95
+      if (lifeSpan === -99) material.current.opacity = 0.65
 
       const colValue = 0.25
       material.current.color.r = colValue * 1.0
@@ -53,7 +53,7 @@ const Slime = ({ id, position, scale=1, lifeSpan=6, setSlimes, playerRef }) => {
     }
 
     const distance = group.current.position.distanceTo(playerRef.current.position)
-    if (distance < scale/2) {
+    if (distance < scale/2.5) {
       playerRef.current.dmgFlag = {
         dmg: 10,
         position: null,
