@@ -19,7 +19,7 @@ const MainMenu = ({ setMode, setLevelName }) => {
       <h1 
         className="text-5xl font-serif mb-56 p-4 rounded-lg"
         style={{backgroundColor: "rgba(0,0,0,0.75)"}}
-      >RE CLONE</h1>
+      >RE-VIL SURVIVOR</h1>
 
       <div 
         className="flex flex-col m-20 justify-center items-center rounded-lg border-red-900 border-2 p-2"

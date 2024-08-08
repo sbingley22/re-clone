@@ -12,21 +12,30 @@ import Slime from "./Slime"
 import { levelData } from "../assets/levels"
 import Gamepad from "react-gamepad"
 import BloodManager from "./BloodManager"
+import Collectables from "./Collectables"
 
 const Game = ({ setMode, options, levelName, setLevelName, score }) => {
   const containerRef = useRef()
   const levels = useRef(levelData)
 
-  const [hudInfo, setHudInfo] = useState({
-    health: 100,
-    msg: "",
-  })
   const playerRef = useRef(null)
   const [zombies, setZombies] = useState([
   ])
   const zombieRefs = useRef([])
   const [slimes, setSlimes] = useState([])
   const splatterFlag = useRef(null)
+
+  const [inventory, setInventory] = useState([
+    {
+      name: "stun grenade",
+      amount: 1,
+    },{},{},{},{},{}
+  ])
+  const [inventorySlot, setInventorySlot] = useState(0)
+  const [hudInfo, setHudInfo] = useState({
+    health: 100,
+    msg: "",
+  })
 
   const addSlime = (x, z, lifeSpan = 5, scale = 1) => {
     const tempSlimes = [...slimes]
@@ -132,7 +141,8 @@ const Game = ({ setMode, options, levelName, setLevelName, score }) => {
         { name: "right", keys: ["ArrowRight", "d", "D"] },
         { name: "jump", keys: ["Space"] },
         { name: "interact", keys: ["f", "F"] },
-        { name: "inventory", keys: ["`"] },
+        { name: "inventoryLeft", keys: ["["] },
+        { name: "inventoryRight", keys: ["]"] },
         { name: "shift", keys: ["Shift"] },
         { name: "aimUp", keys: ["i", "I"] },
         { name: "aimDown", keys: ["k", "K"] },
@@ -178,6 +188,10 @@ const Game = ({ setMode, options, levelName, setLevelName, score }) => {
               setZombies={setZombies}
               zombieRefs={zombieRefs}
               splatterFlag={splatterFlag}
+              inventory={inventory}
+              setInventory={setInventory}
+              inventorySlot={inventorySlot}
+              setInventorySlot={setInventorySlot}
             />
 
             {zombies.map(zomb => (
@@ -193,6 +207,7 @@ const Game = ({ setMode, options, levelName, setLevelName, score }) => {
                 addSlime={addSlime}
                 splatterFlag={splatterFlag}
                 score={score}
+                options={options} 
               />
             ))}
             
@@ -208,6 +223,10 @@ const Game = ({ setMode, options, levelName, setLevelName, score }) => {
               />
             ))}
 
+            <Collectables
+              type={"MedKit"}
+            />
+
             <BloodManager splatterFlag={splatterFlag} />
 
           </Suspense>
@@ -215,7 +234,12 @@ const Game = ({ setMode, options, levelName, setLevelName, score }) => {
         </Gamepad>
       </KeyboardControls>
 
-      <Hud options={options} hudInfo={hudInfo} />
+      <Hud 
+        options={options} 
+        hudInfo={hudInfo} 
+        inventory={inventory}
+        inventorySlot={inventorySlot}
+      />
 
     </div>
   )

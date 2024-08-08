@@ -4,7 +4,7 @@ import jillHealthyImgDev from "../assets/dev/jillHealthy.png"
 import jillHurtImg from "../assets/status/jillHurt.png"
 import jillHurtImgDev from "../assets/dev/jillHurt.png"
 
-const Hud = ({ options, hudInfo }) => {
+const Hud = ({ options, hudInfo, inventory, inventorySlot }) => {
   let hudImg = options.altMode? jillHealthyImgDev : jillHealthyImg 
   if (hudInfo.health < 50) options.altMode? jillHurtImgDev : jillHurtImg
 
@@ -23,6 +23,15 @@ const Hud = ({ options, hudInfo }) => {
       />
 
       <p className="absolute bottom-0 left-0 m-2 text-green-500">{hudInfo.msg}</p>
+
+      <div className="absolute top-0 left-0 m-0 text-yellow-50 flex w-full box-border justify-center items-center text-center">
+        {inventory.map((inv, index) => (
+          <p
+            key={"inventory"+index}
+            className={`${index===inventorySlot? "border-slate-500" : "border-slate-800"} p-1 m-1 bg-slate-950 border-2 inline-block flex-grow`}
+          >{inv.name} x{inv.amount}</p>
+        ))}
+      </div>
     </div>
   )
 }

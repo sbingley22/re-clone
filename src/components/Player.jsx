@@ -11,7 +11,7 @@ const vec3b = new THREE.Vector3()
 const vec3c = new THREE.Vector3()
 const quat = new THREE.Quaternion()
 
-const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo, playerRef, gamepad, zombieRefs, splatterFlag }) => {
+const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo, playerRef, gamepad, zombieRefs, splatterFlag, inventory, setInventory, inventorySlot, setInventorySlot }) => {
   const [visibleNodes, setVisibleNodes] = useState(["Ana", "Pistol", "Shoes-HighTops", "Jacket", "Hair-Parted"])
   const anim = useRef("Idle")
   const [, getKeys] = useKeyboardControls()
@@ -19,6 +19,7 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
   const jumpForce = useRef(null)
   const moving = useRef("Idle")
   const targetedEnemy = useRef(null)
+  const inventoryHeld = useRef(false)
 
   // Level change
   useEffect(()=>{
@@ -96,7 +97,7 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
     if (group.current.health <= 0) return
 
     // eslint-disable-next-line no-unused-vars
-    const { forward, backward, left, right, jump, interact, inventory, shift, aimUp, aimLeft, aimRight, aimDown } = getKeys()
+    const { forward, backward, left, right, jump, interact, inventoryLeft, inventoryRight, shift, aimUp, aimLeft, aimRight, aimDown } = getKeys()
 
     // Check Flags
     if (group.current.actionFlag) {
@@ -106,6 +107,20 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
       takeDamage(group.current.dmgFlag)
       group.current.dmgFlag = null
     }
+
+    // Inventory
+    if (inventoryLeft || inventoryRight) {
+      if (inventoryHeld.current === false) {
+        let dir = 0
+        if (inventoryLeft) dir = -1
+        if (inventoryRight) dir = 1
+
+        if (inventorySlot + dir < 0) setInventorySlot(inventory.length-1)
+        else if (inventorySlot + dir >= inventory.length) setInventorySlot(0)
+        else setInventorySlot(inventorySlot + dir)
+      }
+      inventoryHeld.current = true
+    } else inventoryHeld.current = false
 
     const rotateToVec = (dx, dy) => {
       // Calculate target rotation

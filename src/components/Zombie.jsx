@@ -10,7 +10,7 @@ const vec3b = new THREE.Vector3()
 const vec3c = new THREE.Vector3()
 const quat = new THREE.Quaternion()
 
-const Zombie = ({ id, position=[0,0,0], type="ZMale", health=100, playerRef, zombieRefs, setZombies, addSlime, splatterFlag, score }) => {
+const Zombie = ({ id, position=[0,0,0], type="ZMale", health=100, playerRef, zombieRefs, setZombies, addSlime, splatterFlag, score, options }) => {
   const [visibleNodes, setVisibleNodes] = useState(["ZMale"])
   const anim = useRef("Idle")
   const group = useRef()
@@ -46,7 +46,8 @@ const Zombie = ({ id, position=[0,0,0], type="ZMale", health=100, playerRef, zom
       group.current.scale.setScalar(1.05)
     }
     else if (type === "ZFem") {
-      setVisibleNodes(["ZFem"])
+      if (options.altMode) setVisibleNodes(["ZFemGen"])
+      else setVisibleNodes(["ZFem"])
       speed.current = 1.3
       attackRange.current = 0.8
       attackCoolDown.current = 0.4
