@@ -25,11 +25,25 @@ const Game = ({ setMode, options, levelName, setLevelName, score }) => {
   const [slimes, setSlimes] = useState([])
   const splatterFlag = useRef(null)
 
+  const [collectables, setCollectables] = useState([
+    {
+      id: uuidv4(),
+      name: "health kit",
+      type: "HealthKit",
+      pos: [0,0,0],
+      amount: 1
+    }
+  ])
   const [inventory, setInventory] = useState([
     {
       name: "stun grenade",
       amount: 1,
-    },{},{},{},{},{}
+    },
+    {name:"",amount:0},
+    {name:"",amount:0},
+    {name:"",amount:0},
+    {name:"",amount:0},
+    {name:"",amount:0},
   ])
   const [inventorySlot, setInventorySlot] = useState(0)
   const [hudInfo, setHudInfo] = useState({
@@ -140,9 +154,10 @@ const Game = ({ setMode, options, levelName, setLevelName, score }) => {
         { name: "left", keys: ["ArrowLeft", "a", "A"] },
         { name: "right", keys: ["ArrowRight", "d", "D"] },
         { name: "jump", keys: ["Space"] },
-        { name: "interact", keys: ["f", "F"] },
-        { name: "inventoryLeft", keys: ["["] },
-        { name: "inventoryRight", keys: ["]"] },
+        { name: "interact", keys: ["f", "F", "E", "e"] },
+        { name: "inventoryLeft", keys: ["[", "1"] },
+        { name: "inventoryRight", keys: ["]", "2"] },
+        { name: "inventoryUse", keys: ["p", "o", "P", "O",] },
         { name: "shift", keys: ["Shift"] },
         { name: "aimUp", keys: ["i", "I"] },
         { name: "aimDown", keys: ["k", "K"] },
@@ -223,9 +238,21 @@ const Game = ({ setMode, options, levelName, setLevelName, score }) => {
               />
             ))}
 
-            <Collectables
-              type={"MedKit"}
-            />
+            {collectables.map(collectable=> (
+              <Collectables
+                key={collectable.id}
+                id={collectable.id}
+                name={collectable.name}
+                type={collectable.type}
+                pos={collectable.pos}
+                amount={collectable.amount}
+                playerRef={playerRef}
+                collectables={collectables}
+                setCollectables={setCollectables}
+                inventory={inventory}
+                setInventory={setInventory}
+              />
+            ))}
 
             <BloodManager splatterFlag={splatterFlag} />
 

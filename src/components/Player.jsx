@@ -20,6 +20,7 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
   const moving = useRef("Idle")
   const targetedEnemy = useRef(null)
   const inventoryHeld = useRef(false)
+  const inventoryUseHeld = useRef(false)
 
   // Level change
   useEffect(()=>{
@@ -97,7 +98,8 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
     if (group.current.health <= 0) return
 
     // eslint-disable-next-line no-unused-vars
-    const { forward, backward, left, right, jump, interact, inventoryLeft, inventoryRight, shift, aimUp, aimLeft, aimRight, aimDown } = getKeys()
+    const { forward, backward, left, right, jump, interact, inventoryLeft, inventoryRight, inventoryUse, shift, aimUp, aimLeft, aimRight, aimDown } = getKeys()
+    
 
     // Check Flags
     if (group.current.actionFlag) {
@@ -121,6 +123,29 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
       }
       inventoryHeld.current = true
     } else inventoryHeld.current = false
+
+    if (inventoryUse && !inventoryUseHeld.current) {
+      const removeItem = () => {
+        const tempInv = [...inventory]
+        tempInv[inventorySlot].amount -= 1
+        if (tempInv[inventorySlot].amount <= 0) {
+          tempInv[inventorySlot].name = "" 
+        }
+        setInventory(tempInv)
+      }
+
+      inventoryUseHeld.current = true
+      const item = inventory[inventorySlot]
+
+      if (item && item.name!=="") {
+        if (item.name === "stun grenade") {
+          zombieRefs.current.forEach((z)=>{
+            z.current.actionFlag = "Stunned"
+          })
+          removeItem()
+        }
+      }
+    } else inventoryUseHeld.current = false
 
     const rotateToVec = (dx, dy) => {
       // Calculate target rotation
@@ -377,9 +402,6 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
     }
     jumping()
 
-    if (interact) {
-      console.log(zombieRefs.current)
-    }
   })
 
   return (

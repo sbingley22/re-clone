@@ -29,7 +29,7 @@ const Hud = ({ options, hudInfo, inventory, inventorySlot }) => {
           <p
             key={"inventory"+index}
             className={`${index===inventorySlot? "border-slate-500" : "border-slate-800"} p-1 m-1 bg-slate-950 border-2 inline-block flex-grow`}
-          >{inv.name} x{inv.amount}</p>
+          >{`${inv.name !== "" ? inv.name + " x" + inv.amount : ""}`}</p>
         ))}
       </div>
     </div>

@@ -158,6 +158,9 @@ const Zombie = ({ id, position=[0,0,0], type="ZMale", health=100, playerRef, zom
       if (flag === "kicked") {
         kicked()
       }
+      else if (flag === "Stunned") {
+        anim.current = "Stunned"
+      }
 
       group.current.actionFlag = null
     }
