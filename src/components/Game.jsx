@@ -25,15 +25,7 @@ const Game = ({ setMode, options, levelName, setLevelName, score }) => {
   const [slimes, setSlimes] = useState([])
   const splatterFlag = useRef(null)
 
-  const [collectables, setCollectables] = useState([
-    // {
-    //   id: uuidv4(),
-    //   name: "health kit",
-    //   type: "HealthKit",
-    //   pos: [1,0,3],
-    //   amount: 1
-    // }
-  ])
+  const [collectables, setCollectables] = useState([])
   const [inventory, setInventory] = useState([
     {
       name: "stun grenade",
@@ -112,13 +104,21 @@ const Game = ({ setMode, options, levelName, setLevelName, score }) => {
     aimX: 0,
     aimY: 0,
     jump: false,
+    interact: false,
+    inventoryLeft: false,
+    inventoryRight: false,
+    inventoryUse: false,
   })
 
   const handleGamepadButtonDown = (buttonName) => {
     if (!buttonName) return
-    // console.log(`Button ${buttonName} pressed`)
+    console.log(`Button ${buttonName} pressed`)
     // Handle button press
     if (buttonName === "A") gamepad.current.jump = true
+    else if (buttonName === "X") gamepad.current.interact = true
+    else if (buttonName === "DPadLeft") gamepad.current.inventoryLeft = true
+    else if (buttonName === "DPadRight") gamepad.current.inventoryRight = true
+    else if (buttonName === "DPadUp") gamepad.current.inventoryUse = true
   }
 
   const handleGamepadButtonUp = (buttonName) => {
@@ -126,10 +126,14 @@ const Game = ({ setMode, options, levelName, setLevelName, score }) => {
     // console.log(`Button ${buttonName} released`)
     // Handle button release
     if (buttonName === "A") gamepad.current.jump = false
+    else if (buttonName === "X") gamepad.current.interact = false
+    else if (buttonName === "DPadLeft") gamepad.current.inventoryLeft = false
+    else if (buttonName === "DPadRight") gamepad.current.inventoryRight = false
+    else if (buttonName === "DPadUp") gamepad.current.inventoryUse = false
   }
 
   const handleGamepadAxisChange = (axisName, value) => {
-    console.log(`${axisName} : ${value}`)
+    // console.log(`${axisName} : ${value}`)
     // Handle axis movement
     if (axisName === "LeftStickX") gamepad.current.moveX = value
     else if (axisName === "LeftStickY") gamepad.current.moveY = value
@@ -138,7 +142,17 @@ const Game = ({ setMode, options, levelName, setLevelName, score }) => {
     else if (axisName === "LeftTrigger") {
       if (value > 0.4) gamepad.current.jump = true
       else gamepad.current.jump = false
+    }else if (axisName === "RightTrigger") {
+      if (value > 0.4) gamepad.current.jump = true
+      else gamepad.current.jump = false
     }
+  }
+  
+  const handleConnect = (gamepadIndex) => {
+    console.log(`Gamepad ${gamepadIndex} connected!`)
+  }
+  const handleDisconnect = (gamepadIndex) => {
+    console.log(`Gamepad ${gamepadIndex} disconnected!`)
   }
 
   return (
@@ -170,6 +184,8 @@ const Game = ({ setMode, options, levelName, setLevelName, score }) => {
         ]}
       >
         <Gamepad
+          onConnect={handleConnect}
+          onDisconnect={handleDisconnect}
           onButtonDown={handleGamepadButtonDown}
           onButtonUp={handleGamepadButtonUp}
           onAxisChange={handleGamepadAxisChange}
@@ -239,6 +255,9 @@ const Game = ({ setMode, options, levelName, setLevelName, score }) => {
                 lifeSpan={slime.lifeSpan}
                 setSlimes={setSlimes}
                 playerRef={playerRef}
+                inventory={inventory}
+                setInventory={setInventory}
+                inventorySlot={inventorySlot}
               />
             ))}
 
@@ -251,6 +270,7 @@ const Game = ({ setMode, options, levelName, setLevelName, score }) => {
                 pos={collectable.pos}
                 amount={collectable.amount}
                 playerRef={playerRef}
+                gamepad={gamepad}
                 collectables={collectables}
                 setCollectables={setCollectables}
                 inventory={inventory}

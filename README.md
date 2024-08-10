@@ -14,6 +14,3 @@ TODO:
 Add sounds
 Add projectile zombies?
 Add crawler zombie
-Add pickups, slime sprays, health, stun grenades?
-If ammo selected fire with special high damage ammo, lose ammo.
-If slime spray equiped, no damage upon slime spray col and destroy slime, lose 1 spray.

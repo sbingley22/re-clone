@@ -130,6 +130,15 @@ export const levelData = {
         scale: 1.7,
       },
     ],
+    "collectables": [
+      {
+        id: uuidv4(),
+        name: "power ammo",
+        type: "Ammo",
+        pos: [1,0,3],
+        amount: 10,
+      },
+    ],
   },
   "streets-3": {
     "arena": {
@@ -140,6 +149,44 @@ export const levelData = {
     },
     "img": streets3,
     "next": "streets-4",
+    "zombies": [
+      {
+        id: uuidv4(),
+        position: [5,0,2],
+        type: "ZMale",
+        health: 100,
+      },
+      {
+        id: uuidv4(),
+        position: [3,0,0],
+        type: "ZFem",
+        health: 100,
+      },
+      {
+        id: uuidv4(),
+        position: [-5,0,2],
+        type: "ZMale",
+        health: 100,
+      },
+      {
+        id: uuidv4(),
+        position: [9,0,0],
+        type: "ZFem",
+        health: 100,
+      },
+      {
+        id: uuidv4(),
+        position: [15,0,2],
+        type: "ZMale",
+        health: 100,
+      },
+      {
+        id: uuidv4(),
+        position: [8,0,0],
+        type: "ZFem",
+        health: 100,
+      },
+    ],
     "slimes": [
       {
         id: uuidv4(),
@@ -166,6 +213,15 @@ export const levelData = {
         scale: 2.5,
       },
     ],
+    "collectables": [
+      {
+        id: uuidv4(),
+        name: "power ammo",
+        type: "Ammo",
+        pos: [1,0,3],
+        amount: 10,
+      },
+    ],
   },
   "streets-4": {
     "arena": {
@@ -180,6 +236,42 @@ export const levelData = {
       {
         id: uuidv4(),
         position: [2,0,0],
+        type: "ZFem",
+        health: 100,
+      },
+      {
+        id: uuidv4(),
+        position: [5,0,2],
+        type: "ZMale",
+        health: 100,
+      },
+      {
+        id: uuidv4(),
+        position: [3,0,0],
+        type: "ZFem",
+        health: 100,
+      },
+      {
+        id: uuidv4(),
+        position: [-5,0,2],
+        type: "ZMale",
+        health: 100,
+      },
+      {
+        id: uuidv4(),
+        position: [9,0,0],
+        type: "ZFem",
+        health: 100,
+      },
+      {
+        id: uuidv4(),
+        position: [15,0,2],
+        type: "ZMale",
+        health: 100,
+      },
+      {
+        id: uuidv4(),
+        position: [8,0,0],
         type: "ZFem",
         health: 100,
       },

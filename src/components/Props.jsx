@@ -17,6 +17,7 @@ const Props = ({ visibleNodes }) => {
     }
 
     sceneRef.current.traverse((node) => {
+      // console.log(node.name)
       if (node.isMesh) {
         node.visible = false
         node.castShadow = true

@@ -267,7 +267,7 @@ const Zombie = ({ id, position=[0,0,0], type="ZMale", health=100, playerRef, zom
         }
         else {
           if (!isUnskippableAnimation()) {
-            anim.current = "Idle"
+            anim.current = "WalkingStagger"
           }
         }
       }

@@ -5,7 +5,7 @@ import Props from "./Props"
 import { useFrame } from "@react-three/fiber"
 import { useKeyboardControls } from "@react-three/drei"
 
-const Collectables = ({ id, name, type, pos, amount, playerRef, collectables, setCollectables, inventory, setInventory, setHudInfo }) => {
+const Collectables = ({ id, name, type, pos, amount, playerRef, gamepad, collectables, setCollectables, inventory, setInventory, setHudInfo }) => {
   const group = useRef()
   const [visibleNodes, setVisibleNodes] = useState([])
   const [, getKeys] = useKeyboardControls()
@@ -17,8 +17,11 @@ const Collectables = ({ id, name, type, pos, amount, playerRef, collectables, se
     else if (type === "Spray") {
       setVisibleNodes(["Spray"])
     }
-    else if (type === "StunGrenade") {
+    else if (type === "Grenade") {
       setVisibleNodes(["Grenade"])
+    }
+    else if (type === "Ammo") {
+      setVisibleNodes(["Ammo"])
     }
   }, [type])
 
@@ -27,14 +30,24 @@ const Collectables = ({ id, name, type, pos, amount, playerRef, collectables, se
     setCollectables(temp)
 
     const tempInventory = [...inventory]
+    // check if already contains same item type
+    let emptyIndex = null
     for (let index = 0; index < tempInventory.length; index++) {
       const element = tempInventory[index]
-      if (element.name === "") {
-        element.name = name
-        element.amount = amount
+      if (element.name === name) {
+        element.amount += amount
         setInventory(tempInventory)
         return
       }
+      else if (emptyIndex === null && element.name === "") emptyIndex=index
+    }
+
+    // put item in first empty index
+    if (emptyIndex != null) {
+      tempInventory[emptyIndex].name = name
+      tempInventory[emptyIndex].amount = amount
+      setInventory(tempInventory)
+      return
     }
 
     setHudInfo(prev => ({
@@ -55,7 +68,7 @@ const Collectables = ({ id, name, type, pos, amount, playerRef, collectables, se
         ...prev,
         msg: "E/X to pickup item"
       }))
-      if (interact) {
+      if (interact || gamepad.current.interact) {
         pickupItem()
       }
     }

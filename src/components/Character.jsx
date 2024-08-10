@@ -96,12 +96,19 @@ const Character = ({ visibleNodes, anim, moving = "Idle" }) => {
     return mixer.removeEventListener("finished")
   }, [mixer, actions, anim, moving])
 
+  const getFadeTime = () => {
+    let trans = 0.1
+    if (anim.current === "WalkingStagger" && lastAnim.current === "Idle") trans = 0.2
+    if (anim.current === "Idle" && lastAnim.current === "WalkingStagger") trans = 0.2
+
+    return trans
+  }
 
   // Update Animations
   const updateAnimations = () => {
     if (anim.current === lastAnim.current) return
 
-    const fadeTime = 0.1
+    const fadeTime = getFadeTime()
     actions[lastAnim.current].fadeOut(fadeTime)
     actions[anim.current].reset().fadeIn(fadeTime).play()
 

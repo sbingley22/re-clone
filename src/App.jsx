@@ -9,6 +9,7 @@ function App() {
   // eslint-disable-next-line no-unused-vars
   const [options, setOptions] = useState({
     altMode: true,
+    // altMode: false,
     defaultRun: true
   })
   const [levelName, setLevelName] = useState("streets-1")

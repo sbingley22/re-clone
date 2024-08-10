@@ -6,7 +6,7 @@ import * as THREE from 'three'
 import textureImage from '../assets/textures/slime.png'
 import { useEffect, useRef } from 'react'
 
-const Slime = ({ id, position, scale=1, lifeSpan=6, setSlimes, playerRef }) => {
+const Slime = ({ id, position, scale=1, lifeSpan=6, setSlimes, playerRef, inventory, setInventory, inventorySlot }) => {
   const texture = useLoader(THREE.TextureLoader, textureImage)
   texture.magFilter = THREE.LinearFilter
   texture.minFilter = THREE.LinearFilter
@@ -54,10 +54,22 @@ const Slime = ({ id, position, scale=1, lifeSpan=6, setSlimes, playerRef }) => {
 
     const distance = group.current.position.distanceTo(playerRef.current.position)
     if (distance < scale/2.5) {
-      playerRef.current.dmgFlag = {
-        dmg: 10,
-        position: null,
-        range: null,
+      const item = inventory[inventorySlot]
+      if (item.name === "slime spray") {
+        const tempInventory = [...inventory]
+        tempInventory[inventorySlot].amount -= 1
+        if (tempInventory[inventorySlot].amount <= 0) {
+          tempInventory[inventorySlot].name = ""
+          tempInventory[inventorySlot].amount = 0
+        }
+        setInventory(tempInventory)
+      }
+      else {
+        playerRef.current.dmgFlag = {
+          dmg: 10,
+          position: null,
+          range: null,
+        }
       }
       removeSlimeById(id)
     }

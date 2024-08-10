@@ -111,11 +111,11 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
     }
 
     // Inventory
-    if (inventoryLeft || inventoryRight) {
+    if (inventoryLeft || inventoryRight || gamepad.current.inventoryLeft || gamepad.current.inventoryRight) {
       if (inventoryHeld.current === false) {
         let dir = 0
-        if (inventoryLeft) dir = -1
-        if (inventoryRight) dir = 1
+        if (inventoryLeft || gamepad.current.inventoryLeft) dir = -1
+        if (inventoryRight || gamepad.current.inventoryRight) dir = 1
 
         let tempSlot = inventorySlot + dir
         if (tempSlot < 0) tempSlot = inventory.length-1
@@ -125,7 +125,7 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
       inventoryHeld.current = true
     } else inventoryHeld.current = false
 
-    if (inventoryUse && !inventoryUseHeld.current) {
+    if ((inventoryUse || gamepad.current.inventoryUse) && !inventoryUseHeld.current) {
       const removeItem = () => {
         const tempInv = [...inventory]
         tempInv[inventorySlot].amount -= 1
@@ -147,7 +147,11 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
         }
         else if (item.name === "health kit") {
           group.current.health += 50
-          if (group.current.health > 100) group.current.health = 100   
+          if (group.current.health > 100) group.current.health = 100
+          setHudInfo(prev => ({
+            ...prev,
+            health: group.current.health
+          }))
           removeItem()
         }
       }
@@ -190,9 +194,20 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
       anim.current = "Pistol Fire"
 
       if (targetedEnemy.current) {
+        let dmg = 20
+        if (inventory[inventorySlot].name === "power ammo") {
+          dmg *= 4
+          const tempInventory = [...inventory]
+          tempInventory[inventorySlot].amount -= 1
+          if (tempInventory[inventorySlot].amount <= 0) {
+            tempInventory[inventorySlot].name = ""
+            tempInventory[inventorySlot].amount = 0
+          }
+          setInventory(tempInventory)
+        }
         const zombie = zombieRefs.current.find(z => z.current.id === targetedEnemy.current)
         zombie.current.dmgFlag = {
-          dmg: 20,
+          dmg: dmg,
           position: group.current.position,
           range: null,
         }

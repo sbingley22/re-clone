@@ -1,16 +1,17 @@
 /* eslint-disable react/prop-types */
-import jillHealthyImg from "../assets/status/jillHealthy.png"
-import jillHealthyImgDev from "../assets/dev/jillHealthy.png"
-import jillHurtImg from "../assets/status/jillHurt.png"
-import jillHurtImgDev from "../assets/dev/jillHurt.png"
+import jillHealthyImg from "../assets/status/jillHealthy2.png"
+import jillHealthyImgDev from "../assets/dev/jillHealthy1.png"
+import jillHurtImg from "../assets/status/jillHurt1.png"
+import jillHurtImgDev from "../assets/dev/jillHurt2.png"
 import { useEffect } from "react"
 
 const Hud = ({ options, hudInfo, inventory, inventorySlot, setHudInfo }) => {
   let hudImg = options.altMode? jillHealthyImgDev : jillHealthyImg 
-  if (hudInfo.health < 50) options.altMode? jillHurtImgDev : jillHurtImg
-
   let bgCol = "rgba(0,255,0,0.2)"
-  if (hudInfo.health < 50) bgCol = "rgba(255,0,0,0.2)"
+  if (hudInfo.health < 50) {
+    hudImg = options.altMode? jillHurtImgDev : jillHurtImg
+    bgCol = "rgba(255,0,0,0.2)"
+  }
   else if (hudInfo.health < 75) bgCol = "rgba(133,133,0,0.2)"
 
   const imgSize = options.altMode ? 256 : 128
@@ -19,9 +20,11 @@ const Hud = ({ options, hudInfo, inventory, inventorySlot, setHudInfo }) => {
     const item = inventory[inventorySlot]
     if (item.name === "") return
 
-    let msg = "E/F/D-Up "
+    let msg = "O/P/D-Up "
     if (item.name === "stun grenade") msg += "to use stun grenade"
     else if (item.name === "health kit") msg += "to use health kit"
+    else if (item.name === "slime spray") msg = "use slime spray by walking on slime and recieve no damage"
+    else if (item.name === "power ammo") msg = "shoot with power ammo to deal high dmg"
 
     setHudInfo(prev => ({
       ...prev,
