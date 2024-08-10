@@ -26,13 +26,13 @@ const Game = ({ setMode, options, levelName, setLevelName, score }) => {
   const splatterFlag = useRef(null)
 
   const [collectables, setCollectables] = useState([
-    {
-      id: uuidv4(),
-      name: "health kit",
-      type: "HealthKit",
-      pos: [0,0,0],
-      amount: 1
-    }
+    // {
+    //   id: uuidv4(),
+    //   name: "health kit",
+    //   type: "HealthKit",
+    //   pos: [1,0,3],
+    //   amount: 1
+    // }
   ])
   const [inventory, setInventory] = useState([
     {
@@ -87,6 +87,10 @@ const Game = ({ setMode, options, levelName, setLevelName, score }) => {
     if (newLevel.slimes) setSlimes(newLevel.slimes)
     else {
       setSlimes([])
+    }
+    if (newLevel.collectables) setCollectables(newLevel.collectables)
+    else {
+      setCollectables([])
     }
 
     updateMsg("")
@@ -251,6 +255,7 @@ const Game = ({ setMode, options, levelName, setLevelName, score }) => {
                 setCollectables={setCollectables}
                 inventory={inventory}
                 setInventory={setInventory}
+                setHudInfo={setHudInfo}
               />
             ))}
 
@@ -264,6 +269,7 @@ const Game = ({ setMode, options, levelName, setLevelName, score }) => {
       <Hud 
         options={options} 
         hudInfo={hudInfo} 
+        setHudInfo={setHudInfo}
         inventory={inventory}
         inventorySlot={inventorySlot}
       />

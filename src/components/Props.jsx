@@ -1,50 +1,49 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/no-unknown-property */
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import glb from "../assets/reProps.glb?url"
 import { useGLTF } from "@react-three/drei"
+import { clone } from "three/examples/jsm/utils/SkeletonUtils"
 
 const Props = ({ visibleNodes }) => {
-  const { scene, nodes } = useGLTF(glb)
+  const { scene } = useGLTF(glb)
+  const sceneRef = useRef()
 
+  // Clone scene to create unique instances
   // Initial Setup
   useEffect(() => {
-    console.log(nodes)
+    if (scene) {
+      sceneRef.current = clone(scene)
+    }
 
-    Object.keys(nodes).forEach(nodeName => {
-      const node = nodes[nodeName]
-      if (node.type === "Mesh") {
+    sceneRef.current.traverse((node) => {
+      if (node.isMesh) {
         node.visible = false
         node.castShadow = true
       }
     })
-  }, [nodes])
+  }, [scene])
 
   // Set visible nodes
-  useEffect(()=>{
-    if (!visibleNodes) return
+  useEffect(() => {
+    if (!sceneRef.current || !visibleNodes) return
 
-    Object.keys(nodes).forEach(nodeName => {
-      const node = nodes[nodeName]
-      if (node.type === "Mesh") node.visible = false
-    })
-
-    visibleNodes.forEach(vn => {
-      const node = nodes[vn]
+    visibleNodes.forEach((vn) => {
+      const node = sceneRef.current.getObjectByName(vn)
       if (!node) return
 
       node.visible = true
-      if (node.type === "Group") {
-        node.children.forEach(child => {
+      if (node.isGroup) {
+        node.children.forEach((child) => {
           child.visible = true
         })
       }
     })
-  }, [visibleNodes, nodes])
+  }, [visibleNodes])
 
   return (
     <group>
-      <primitive object={scene} />
+      {sceneRef.current && <primitive object={sceneRef.current} />}
     </group>
   )
 }

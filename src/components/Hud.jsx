@@ -3,8 +3,9 @@ import jillHealthyImg from "../assets/status/jillHealthy.png"
 import jillHealthyImgDev from "../assets/dev/jillHealthy.png"
 import jillHurtImg from "../assets/status/jillHurt.png"
 import jillHurtImgDev from "../assets/dev/jillHurt.png"
+import { useEffect } from "react"
 
-const Hud = ({ options, hudInfo, inventory, inventorySlot }) => {
+const Hud = ({ options, hudInfo, inventory, inventorySlot, setHudInfo }) => {
   let hudImg = options.altMode? jillHealthyImgDev : jillHealthyImg 
   if (hudInfo.health < 50) options.altMode? jillHurtImgDev : jillHurtImg
 
@@ -13,6 +14,20 @@ const Hud = ({ options, hudInfo, inventory, inventorySlot }) => {
   else if (hudInfo.health < 75) bgCol = "rgba(133,133,0,0.2)"
 
   const imgSize = options.altMode ? 256 : 128
+
+  useEffect(()=>{
+    const item = inventory[inventorySlot]
+    if (item.name === "") return
+
+    let msg = "E/F/D-Up "
+    if (item.name === "stun grenade") msg += "to use stun grenade"
+    else if (item.name === "health kit") msg += "to use health kit"
+
+    setHudInfo(prev => ({
+      ...prev,
+      msg: msg
+    }))
+  }, [inventory, inventorySlot, setHudInfo])
 
   return (
     <div className="h-full w-full">

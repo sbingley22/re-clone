@@ -52,6 +52,22 @@ export const levelData = {
         scale: 1.5,
       },
     ],
+    "collectables": [
+      {
+        id: uuidv4(),
+        name: "health kit",
+        type: "HealthKit",
+        pos: [1,0,3],
+        amount: 1,
+      },
+      {
+        id: uuidv4(),
+        name: "slime spray",
+        type: "Spray",
+        pos: [-1.5,0,-3.5],
+        amount: 3,
+      },
+    ]
   },
   "streets-2": {
     "arena": {

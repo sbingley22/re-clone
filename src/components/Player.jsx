@@ -117,9 +117,10 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
         if (inventoryLeft) dir = -1
         if (inventoryRight) dir = 1
 
-        if (inventorySlot + dir < 0) setInventorySlot(inventory.length-1)
-        else if (inventorySlot + dir >= inventory.length) setInventorySlot(0)
-        else setInventorySlot(inventorySlot + dir)
+        let tempSlot = inventorySlot + dir
+        if (tempSlot < 0) tempSlot = inventory.length-1
+        else if (tempSlot >= inventory.length) tempSlot = 0
+        setInventorySlot(tempSlot)
       }
       inventoryHeld.current = true
     } else inventoryHeld.current = false
@@ -142,6 +143,11 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
           zombieRefs.current.forEach((z)=>{
             z.current.actionFlag = "Stunned"
           })
+          removeItem()
+        }
+        else if (item.name === "health kit") {
+          group.current.health += 50
+          if (group.current.health > 100) group.current.health = 100   
           removeItem()
         }
       }

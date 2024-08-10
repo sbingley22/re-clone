@@ -5,7 +5,7 @@ import Props from "./Props"
 import { useFrame } from "@react-three/fiber"
 import { useKeyboardControls } from "@react-three/drei"
 
-const Collectables = ({ id, name, type, pos, amount, playerRef, collectables, setCollectables, inventory, setInventory }) => {
+const Collectables = ({ id, name, type, pos, amount, playerRef, collectables, setCollectables, inventory, setInventory, setHudInfo }) => {
   const group = useRef()
   const [visibleNodes, setVisibleNodes] = useState([])
   const [, getKeys] = useKeyboardControls()
@@ -13,6 +13,12 @@ const Collectables = ({ id, name, type, pos, amount, playerRef, collectables, se
   useEffect(()=>{
     if (type === "HealthKit") {
       setVisibleNodes(["HealthKit"])
+    }
+    else if (type === "Spray") {
+      setVisibleNodes(["Spray"])
+    }
+    else if (type === "StunGrenade") {
+      setVisibleNodes(["Grenade"])
     }
   }, [type])
 
@@ -31,7 +37,10 @@ const Collectables = ({ id, name, type, pos, amount, playerRef, collectables, se
       }
     }
 
-    console.log("Inventory Full")
+    setHudInfo(prev => ({
+      ...prev,
+      msg: "Inventory Full"
+    }))
   }
 
   useFrame(()=>{
@@ -40,9 +49,13 @@ const Collectables = ({ id, name, type, pos, amount, playerRef, collectables, se
 
     const { interact } = getKeys()
 
-    if (interact) {
-      const dist = group.current.position.distanceTo(playerRef.current.position)
-      if (dist < 0.75) {
+    const dist = group.current.position.distanceTo(playerRef.current.position)
+    if (dist < 0.75) {
+      setHudInfo(prev => ({
+        ...prev,
+        msg: "E/X to pickup item"
+      }))
+      if (interact) {
         pickupItem()
       }
     }
