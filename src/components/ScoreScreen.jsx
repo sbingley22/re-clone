@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
 
 const ScoreScreen = ({ setMode, endScreen="Game Over", score }) => {
-  let still = '/imgs/gameOverStill.jpg'
-  if (endScreen === "YOU SURVIVED!") still = '/imgs/survivorStill.jpg'
+  let still = './imgs/gameOverStill.jpg'
+  if (endScreen === "YOU SURVIVED!") still = './imgs/survivorStill.jpg'
 
   return (
     <div 
