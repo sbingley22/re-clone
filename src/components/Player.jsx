@@ -11,7 +11,7 @@ const vec3b = new THREE.Vector3()
 const vec3c = new THREE.Vector3()
 const quat = new THREE.Quaternion()
 
-const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo, playerRef, gamepad, zombieRefs, splatterFlag, inventory, setInventory, inventorySlot, setInventorySlot }) => {
+const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo, playerRef, gamepad, zombieRefs, splatterFlag, inventory, setInventory, inventorySlot, setInventorySlot, playAudio }) => {
   const [visibleNodes, setVisibleNodes] = useState(["Ana", "Pistol", "Shoes-HighTops", "Jacket", "Hair-Parted"])
   const anim = useRef("Idle")
   const [, getKeys] = useKeyboardControls()
@@ -73,6 +73,8 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
       pos: group.current.position,
       color: 0x772211,
     }
+
+    playAudio("./audio/f-hurt.ogg", 0.7)
 
     if (group.current.health <= 0) {
       // game over
@@ -144,6 +146,7 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
             z.current.actionFlag = "Stunned"
           })
           removeItem()
+          playAudio("./audio/gun-cocking.wav", 0.9)
         }
         else if (item.name === "health kit") {
           group.current.health += 50
@@ -204,13 +207,19 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
             tempInventory[inventorySlot].amount = 0
           }
           setInventory(tempInventory)
+          playAudio("./audio/pistol-gunshot.wav", 0.25)
         }
+        else {
+          playAudio("./audio/pistol-gunshot.wav", 0.14)
+        }
+
         const zombie = zombieRefs.current.find(z => z.current.id === targetedEnemy.current)
         zombie.current.dmgFlag = {
           dmg: dmg,
           position: group.current.position,
           range: null,
         }
+
       }
     }
     const lockOnEnemy = (dx, dy) => {

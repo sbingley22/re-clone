@@ -12,5 +12,3 @@ git subtree push --prefix dist origin gh-pages
 
 TODO:
 Add sounds
-Add projectile zombies?
-Add crawler zombie

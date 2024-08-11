@@ -10,7 +10,7 @@ const vec3b = new THREE.Vector3()
 const vec3c = new THREE.Vector3()
 const quat = new THREE.Quaternion()
 
-const Zombie = ({ id, position=[0,0,0], type="ZMale", health=100, playerRef, zombieRefs, setZombies, addSlime, splatterFlag, score, options }) => {
+const Zombie = ({ id, position=[0,0,0], type="ZMale", health=100, playerRef, zombieRefs, setZombies, addSlime, splatterFlag, score, options, playAudio }) => {
   const [visibleNodes, setVisibleNodes] = useState(["ZMale"])
   const anim = useRef("Idle")
   const group = useRef()
@@ -106,6 +106,8 @@ const Zombie = ({ id, position=[0,0,0], type="ZMale", health=100, playerRef, zom
       pos: group.current.position,
       color: 0x556611,
     }
+
+    playAudio("./audio/blood-splat.wav")
 
     const chance = Math.random()
     if (chance > 0.8) anim.current = "Stunned"
@@ -270,6 +272,8 @@ const Zombie = ({ id, position=[0,0,0], type="ZMale", health=100, playerRef, zom
             anim.current = "WalkingStagger"
           }
         }
+
+        if (Math.random() < 0.0002) playAudio("./audio/z-growl.wav")
       }
     }
     logic()

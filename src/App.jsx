@@ -2,14 +2,13 @@ import { useEffect, useRef, useState } from "react"
 import Game from "./components/Game"
 import MainMenu from "./components/MainMenu"
 import ScoreScreen from "./components/ScoreScreen"
-import audioPiano from "/audio/scary-piano.wav"
 
 function App() {
-  const [mode, setMode] = useState(1)
+  const [mode, setMode] = useState(0)
   // eslint-disable-next-line no-unused-vars
   const [options, setOptions] = useState({
-    altMode: true,
-    // altMode: false,
+    // altMode: true,
+    altMode: false,
     defaultRun: true
   })
   const [levelName, setLevelName] = useState("streets-1")
@@ -17,10 +16,13 @@ function App() {
 
   const audioPianoRef = useRef()
 
-  const playAudio = () => {
-    if (!audioPianoRef.current) return
-    audioPianoRef.current.play()
-    audioPianoRef.current.volume = 0.1
+  const playAudio = (type) => {
+    //debugger
+    if (type === "piano") {
+      if (!audioPianoRef.current) return
+      audioPianoRef.current.play()
+      audioPianoRef.current.volume = 0.2
+    }
   }
 
   useEffect(()=>{
@@ -28,15 +30,18 @@ function App() {
       score.current = 0
       setLevelName("streets-1")
     }
+    else if (mode === 1) {
+      playAudio("bgm", 0.9)
+    }
   }, [mode])
 
   const score = useRef(0)
   
   if (mode === 0) return (
-    <div className="dynamic-width" onClick={playAudio}>
+    <div className="dynamic-width" onClick={()=>playAudio("piano")}>
       <MainMenu setMode={setMode} setLevelName={setLevelName} />
       <audio ref={audioPianoRef} controls={false}>
-        <source src={audioPiano} type="audio/mp4" />
+        <source src={"./audio/scary-piano.wav"} type="audio/mp4" />
       </audio>
     </div>
   )

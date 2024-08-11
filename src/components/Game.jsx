@@ -19,8 +19,7 @@ const Game = ({ setMode, options, levelName, setLevelName, score }) => {
   const levels = useRef(levelData)
 
   const playerRef = useRef(null)
-  const [zombies, setZombies] = useState([
-  ])
+  const [zombies, setZombies] = useState([])
   const zombieRefs = useRef([])
   const [slimes, setSlimes] = useState([])
   const splatterFlag = useRef(null)
@@ -42,6 +41,23 @@ const Game = ({ setMode, options, levelName, setLevelName, score }) => {
     health: 100,
     msg: "",
   })
+
+  const audioBGMRef = useRef()
+  const playBGM = (type) => {
+    if (type === "scary") {
+      if (!audioBGMRef.current) return
+      audioBGMRef.current.play()
+      audioBGMRef.current.volume = 0.8
+    }
+  }
+  const playAudio = (src, volume=1) => {
+    const audio = new Audio(src)
+    audio.volume = volume
+    audio.play()
+  }
+  useEffect(()=>{
+    playBGM("scary")
+  }, [])
 
   const addSlime = (x, z, lifeSpan = 5, scale = 1) => {
     const tempSlimes = [...slimes]
@@ -125,6 +141,7 @@ const Game = ({ setMode, options, levelName, setLevelName, score }) => {
     if (!buttonName) return
     // console.log(`Button ${buttonName} released`)
     // Handle button release
+    if (buttonName === "A") playAudio("./audio/pistol-gunshot.wav")
     if (buttonName === "A") gamepad.current.jump = false
     else if (buttonName === "X") gamepad.current.interact = false
     else if (buttonName === "DPadLeft") gamepad.current.inventoryLeft = false
@@ -227,6 +244,7 @@ const Game = ({ setMode, options, levelName, setLevelName, score }) => {
               setInventory={setInventory}
               inventorySlot={inventorySlot}
               setInventorySlot={setInventorySlot}
+              playAudio={playAudio}
             />
 
             {zombies.map(zomb => (
@@ -243,6 +261,7 @@ const Game = ({ setMode, options, levelName, setLevelName, score }) => {
                 splatterFlag={splatterFlag}
                 score={score}
                 options={options} 
+                playAudio={playAudio}
               />
             ))}
             
@@ -294,6 +313,9 @@ const Game = ({ setMode, options, levelName, setLevelName, score }) => {
         inventorySlot={inventorySlot}
       />
 
+      <audio ref={audioBGMRef} controls={false}>
+        <source src={"./audio/creepy-music.wav"} type="audio/wav" />
+      </audio>
     </div>
   )
 }
