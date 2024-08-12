@@ -11,4 +11,3 @@ then run npm i
 git subtree push --prefix dist origin gh-pages
 
 TODO:
-Add sounds
