@@ -55,7 +55,7 @@ const Character = ({ visibleNodes, anim, moving = "Idle" }) => {
   useEffect(()=>{
     if (!mixer) return
 
-    const oneShotAnims = ["Fight Jab", "Fight Roundhouse", "Fight Straight", "Jump", "Land", "Pistol Fire", "Take Damage", "Dying", "Stunned"]
+    const oneShotAnims = ["Fight Jab", "Fight Roundhouse", "Fight Straight", "Jump", "Land", "Pistol Fire", "Pistol Fire2", "Take Damage", "Dying", "Stunned"]
     oneShotAnims.forEach(osa => {
       actions[osa].clampWhenFinished = true
       actions[osa].repetitions = 1
@@ -71,8 +71,13 @@ const Character = ({ visibleNodes, anim, moving = "Idle" }) => {
         anim.current = "Pistol Aim"
         return
       }
+      if (action === "Pistol Fire2") {
+        if (anim.current === "Fight Roundhouse") return
+        anim.current = "Pistol Aim2"
+        return
+      }
       if (action === "Fight Roundhouse") {
-        anim.current = "Pistol Aim"
+        anim.current = "Pistol Aim2"
         return
       }
       if (action === "Jump") {

@@ -5,19 +5,17 @@ import ScoreScreen from "./components/ScoreScreen"
 
 function App() {
   const [mode, setMode] = useState(0)
-  // eslint-disable-next-line no-unused-vars
   const [options, setOptions] = useState({
-    // altMode: true,
-    altMode: false,
-    defaultRun: true
+    altMode: 1,
+    defaultRun: true,
+    autoFire: true,
+    autoAim: true,
   })
   const [levelName, setLevelName] = useState("streets-1")
-  // const [levelName, setLevelName] = useState("streets-1")
 
   const audioPianoRef = useRef()
 
   const playAudio = (type) => {
-    //debugger
     if (type === "piano") {
       if (!audioPianoRef.current) return
       audioPianoRef.current.play()
@@ -39,7 +37,12 @@ function App() {
   
   if (mode === 0) return (
     <div className="dynamic-width" onClick={()=>playAudio("piano")}>
-      <MainMenu setMode={setMode} setLevelName={setLevelName} />
+      <MainMenu 
+        setMode={setMode} 
+        setLevelName={setLevelName} 
+        options={options}
+        setOptions={setOptions}
+      />
       <audio ref={audioPianoRef} controls={false}>
         <source src={"./audio/scary-piano.wav"} type="audio/mp4" />
       </audio>

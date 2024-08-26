@@ -7,6 +7,8 @@ import woods1 from "./bgs/woods1.jpeg"
 import woods2 from "./bgs/woods2.jpeg"
 import woods3 from "./bgs/woods3.jpeg"
 import woods4 from "./bgs/woods4.jpeg"
+import apartment1 from "./bgs/apartment1.jpg"
+import apartment2 from "./bgs/apartment2.jpg"
 
 export const levelData = {
   "streets-1": {
@@ -26,7 +28,7 @@ export const levelData = {
         health: 100,
       },
     ],
-    "slimes": [
+    "nets": [
       {
         id: uuidv4(),
         position: [-1, 0, -2],
@@ -104,7 +106,7 @@ export const levelData = {
         health: 100,
       },
     ],
-    "slimes": [
+    "nets": [
       {
         id: uuidv4(),
         position: [1, 0, -2],
@@ -187,7 +189,7 @@ export const levelData = {
         health: 100,
       },
     ],
-    "slimes": [
+    "nets": [
       {
         id: uuidv4(),
         position: [-1, 0, -0],
@@ -320,7 +322,7 @@ export const levelData = {
         health: 500,
       },
     ],
-    "slimes": [
+    "nets": [
       {
         id: uuidv4(),
         position: [-1, 0, -1],
@@ -462,7 +464,7 @@ export const levelData = {
         health: 100,
       },
     ],
-    "slimes": [
+    "nets": [
       {
         id: uuidv4(),
         position: [1, 0, 2],
@@ -574,7 +576,7 @@ export const levelData = {
         health: 100,
       },
     ],
-    "slimes": [
+    "nets": [
       {
         id: uuidv4(),
         position: [1, 0, 4],
@@ -609,12 +611,346 @@ export const levelData = {
       "z2": 6
     },
     "img": woods4,
+    "next": "apartment-1",
+    "zombies": [
+      {
+        id: uuidv4(),
+        position: [3,0,0],
+        type: "Macrophage",
+        health: 500,
+      },
+      {
+        id: uuidv4(),
+        position: [5,0,2],
+        type: "ZMale",
+        health: 100,
+      },
+      {
+        id: uuidv4(),
+        position: [3,0,0],
+        type: "ZFem",
+        health: 100,
+      },
+      {
+        id: uuidv4(),
+        position: [-5,0,2],
+        type: "ZMale",
+        health: 100,
+      },
+      {
+        id: uuidv4(),
+        position: [9,0,0],
+        type: "ZFem",
+        health: 100,
+      },
+      {
+        id: uuidv4(),
+        position: [15,0,2],
+        type: "ZMale",
+        health: 100,
+      },
+      {
+        id: uuidv4(),
+        position: [8,0,0],
+        type: "ZFem",
+        health: 100,
+      },
+    ],
+    "slimes": [
+      {
+        id: uuidv4(),
+        position: [-1, 0, -0],
+        lifeSpan: -99,
+        scale: 1.5,
+      },
+      {
+        id: uuidv4(),
+        position: [0, 0, 2.5],
+        lifeSpan: -99,
+        scale: 1.9,
+      },
+      {
+        id: uuidv4(),
+        position: [2.5, 0, 3.25],
+        lifeSpan: -99,
+        scale: 3.5,
+      },
+      {
+        id: uuidv4(),
+        position: [3, 0, 0],
+        lifeSpan: -99,
+        scale: 2.5,
+      },
+    ],
+  },
+  "apartment-1": {
+    "arena": {
+      "x1": -4,
+      "x2": 4,
+      "z1": -1.5,
+      "z2": 6
+    },
+    "img": apartment1,
+    "next": "apartment-2",
+    "zombies": [
+      {
+        id: uuidv4(),
+        position: [2,0,0],
+        type: "ZFem",
+        health: 100,
+      },
+    ],
+    "slimes": [
+      {
+        id: uuidv4(),
+        position: [-1, 0, -1],
+        lifeSpan: -99,
+        scale: 1.5,
+      },
+      {
+        id: uuidv4(),
+        position: [0, 0, 3.5],
+        lifeSpan: -99,
+        scale: 3.5,
+      },
+      {
+        id: uuidv4(),
+        position: [-1.5, 0, 2.25],
+        lifeSpan: -99,
+        scale: 2.5,
+      },
+      {
+        id: uuidv4(),
+        position: [3, 0, 2.5],
+        lifeSpan: -99,
+        scale: 2.5,
+      },
+    ],
+  },
+  "apartment-2": {
+    "arena": {
+      "x1": -4,
+      "x2": 4,
+      "z1": -3,
+      "z2": 6
+    },
+    "img": apartment2,
+    "next": "apartment-3",
+    "zombies": [
+      {
+        id: uuidv4(),
+        position: [2,0,2],
+        type: "ZMale",
+        health: 100,
+      },
+      {
+        id: uuidv4(),
+        position: [5,0,2],
+        type: "ZMale",
+        health: 100,
+      },
+      {
+        id: uuidv4(),
+        position: [3,0,0],
+        type: "ZFem",
+        health: 100,
+      },
+      {
+        id: uuidv4(),
+        position: [-5,0,2],
+        type: "ZMale",
+        health: 100,
+      },
+      {
+        id: uuidv4(),
+        position: [9,0,0],
+        type: "ZFem",
+        health: 100,
+      },
+      {
+        id: uuidv4(),
+        position: [15,0,2],
+        type: "ZMale",
+        health: 100,
+      },
+      {
+        id: uuidv4(),
+        position: [8,0,0],
+        type: "ZFem",
+        health: 100,
+      },
+      {
+        id: uuidv4(),
+        position: [1,0,0],
+        type: "ZFem",
+        health: 100,
+      },
+      {
+        id: uuidv4(),
+        position: [5,0,2],
+        type: "ZMale",
+        health: 100,
+      },
+      {
+        id: uuidv4(),
+        position: [8,0,0],
+        type: "ZFem",
+        health: 100,
+      },
+    ],
+    "nets": [
+      {
+        id: uuidv4(),
+        position: [1, 0, 2],
+        lifeSpan: -99,
+        scale: 1.9,
+      },
+      {
+        id: uuidv4(),
+        position: [-1, 0, 4.5],
+        lifeSpan: -99,
+        scale: 2.5,
+      },
+      {
+        id: uuidv4(),
+        position: [2.5, 0, 2.25],
+        lifeSpan: -99,
+        scale: 1.8,
+      },
+      {
+        id: uuidv4(),
+        position: [0, 0, 0.5],
+        lifeSpan: -99,
+        scale: 1.7,
+      },
+    ],
+  },
+  "apartment-3": {
+    "arena": {
+      "x1": -4,
+      "x2": 4,
+      "z1": -1,
+      "z2": 6
+    },
+    "img": apartment2,
+    "next": "apartment-4",
+    "zombies": [
+      {
+        id: uuidv4(),
+        position: [2,0,0],
+        type: "ZFem",
+        health: 100,
+      },
+      {
+        id: uuidv4(),
+        position: [3,0,0],
+        type: "ZFem",
+        health: 100,
+      },
+      {
+        id: uuidv4(),
+        position: [-5,0,2],
+        type: "ZMale",
+        health: 100,
+      },
+      {
+        id: uuidv4(),
+        position: [9,0,0],
+        type: "ZFem",
+        health: 100,
+      },
+      {
+        id: uuidv4(),
+        position: [8,0,0],
+        type: "ZFem",
+        health: 100,
+      },
+    ],
+    "slimes": [
+      {
+        id: uuidv4(),
+        position: [3, 0, 0],
+        lifeSpan: -99,
+        scale: 2.5,
+      },
+      {
+        id: uuidv4(),
+        position: [0, 0, 3.5],
+        lifeSpan: -99,
+        scale: 1.9,
+      },
+      {
+        id: uuidv4(),
+        position: [-1.5, 0, 2.25],
+        lifeSpan: -99,
+        scale: 1.8,
+      },
+      {
+        id: uuidv4(),
+        position: [3, 0, 3.5],
+        lifeSpan: -99,
+        scale: 1.9,
+      },
+    ],
+  },
+  "apartment-4": {
+    "arena": {
+      "x1": -4,
+      "x2": 4,
+      "z1": -1,
+      "z2": 6
+    },
+    "img": apartment1,
+    "next": "apartment-5",
+    "zombies": [
+      {
+        id: uuidv4(),
+        position: [2,0,0],
+        type: "ZFem",
+        health: 100,
+      },
+    ],
+    "nets": [
+      {
+        id: uuidv4(),
+        position: [1, 0, 4],
+        lifeSpan: -99,
+        scale: 1.5,
+      },
+      {
+        id: uuidv4(),
+        position: [-1.8, 0, -0.5],
+        lifeSpan: -99,
+        scale: 1.5,
+      },
+      {
+        id: uuidv4(),
+        position: [0.5, 0, 0],
+        lifeSpan: -99,
+        scale: 2.8,
+      },
+      {
+        id: uuidv4(),
+        position: [3, 0, 0.5],
+        lifeSpan: -99,
+        scale: 2.5,
+      },
+    ],
+  },
+  "apartment-5": {
+    "arena": {
+      "x1": -3,
+      "x2": 4,
+      "z1": -1,
+      "z2": 6
+    },
+    "img": apartment2,
     "next": null,
     "zombies": [
       {
         id: uuidv4(),
         position: [3,0,0],
-        type: "Neutrophil",
+        type: "NKCell",
         health: 500,
       },
       {

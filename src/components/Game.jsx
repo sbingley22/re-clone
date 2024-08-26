@@ -13,6 +13,7 @@ import { levelData } from "../assets/levels"
 import Gamepad from "react-gamepad"
 import BloodManager from "./BloodManager"
 import Collectables from "./Collectables"
+import Net from "./Net"
 
 const Game = ({ setMode, options, levelName, setLevelName, score }) => {
   const containerRef = useRef()
@@ -22,6 +23,7 @@ const Game = ({ setMode, options, levelName, setLevelName, score }) => {
   const [zombies, setZombies] = useState([])
   const zombieRefs = useRef([])
   const [slimes, setSlimes] = useState([])
+  const [nets, setNets] = useState([])
   const splatterFlag = useRef(null)
 
   const [collectables, setCollectables] = useState([])
@@ -96,6 +98,10 @@ const Game = ({ setMode, options, levelName, setLevelName, score }) => {
     else {
       setSlimes([])
     }
+    if (newLevel.nets) setNets(newLevel.nets)
+    else {
+      setNets([])
+    }
     if (newLevel.collectables) setCollectables(newLevel.collectables)
     else {
       setCollectables([])
@@ -106,13 +112,13 @@ const Game = ({ setMode, options, levelName, setLevelName, score }) => {
 
   }, [levelName, score])
 
+  let camSetup = 1
   let camFov = 5
   let camPos = [0, 25, 55]
-  if (camFov === 20) camPos = [0,7.5,12]
-  else if (camFov === 15) camPos = [0,17,28]
-  else if (camFov === 10) camPos = [0,17,28]
-  else if (camFov === 5) camPos = [0,25,55]
-  else if (camFov === 1) camPos = [0,150,250]
+  if (camSetup === 1) {
+    camPos = [0,35,70]
+    camFov = 5
+  }
 
   const gamepad = useRef({
     moveX: 0,
@@ -189,10 +195,10 @@ const Game = ({ setMode, options, levelName, setLevelName, score }) => {
         { name: "left", keys: ["ArrowLeft", "a", "A"] },
         { name: "right", keys: ["ArrowRight", "d", "D"] },
         { name: "jump", keys: ["Space"] },
-        { name: "interact", keys: ["f", "F", "E", "e"] },
+        { name: "interact", keys: ["f", "F", "E", "e", "h", "H", "u", "U"] },
         { name: "inventoryLeft", keys: ["[", "1"] },
         { name: "inventoryRight", keys: ["]", "2"] },
-        { name: "inventoryUse", keys: ["p", "o", "P", "O",] },
+        { name: "inventoryUse", keys: ["p", "o", "P", "O", "q", "Q"] },
         { name: "shift", keys: ["Shift"] },
         { name: "aimUp", keys: ["i", "I"] },
         { name: "aimDown", keys: ["k", "K"] },
@@ -221,11 +227,15 @@ const Game = ({ setMode, options, levelName, setLevelName, score }) => {
               environmentIntensity={4} 
             />
 
-            <ShadowCatcher />
+            <ShadowCatcher scale={2} />
             <directionalLight
               castShadow
               position={[0,10,0]}
               intensity={0.1}
+              shadow-camera-left={-10}
+              shadow-camera-right={10}
+              shadow-camera-top={10}
+              shadow-camera-bottom={-10}
             />
 
             <Player 
@@ -273,6 +283,21 @@ const Game = ({ setMode, options, levelName, setLevelName, score }) => {
                 scale={slime.scale}
                 lifeSpan={slime.lifeSpan}
                 setSlimes={setSlimes}
+                playerRef={playerRef}
+                inventory={inventory}
+                setInventory={setInventory}
+                inventorySlot={inventorySlot}
+              />
+            ))}
+
+            {nets.map(net => (
+              <Net 
+                key={net.id} 
+                id={net.id}
+                pos={net.position} 
+                scale={net.scale}
+                nets={nets}
+                setNets={setNets}
                 playerRef={playerRef}
                 inventory={inventory}
                 setInventory={setInventory}

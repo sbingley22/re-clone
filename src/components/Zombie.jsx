@@ -60,7 +60,21 @@ const Zombie = ({ id, position=[0,0,0], type="ZMale", health=100, playerRef, zom
       attackCoolDown.current = 0.5
       group.current.scale.setScalar(1.4)
     }
-  }, [type])
+    else if (type === "Macrophage") {
+      setVisibleNodes(["Macrophage"])
+      speed.current = 1.6
+      attackRange.current = 1.7
+      attackCoolDown.current = 0.5
+      group.current.scale.setScalar(1.4)
+    }
+    else if (type === "NKCell") {
+      setVisibleNodes(["NKCell", "NKCape"])
+      speed.current = 1.8
+      attackRange.current = 1.7
+      attackCoolDown.current = 0.5
+      group.current.scale.setScalar(1.4)
+    }
+  }, [options.altMode, type])
 
   const isUnskippableAnimation = () => {
     const a = anim.current
@@ -234,7 +248,7 @@ const Zombie = ({ id, position=[0,0,0], type="ZMale", health=100, playerRef, zom
       else {
         if (["Fight Jab", "Fight Straight"].includes(anim.current)) return
 
-        let tempSpeed = speed.current
+        let tempSpeed = speed.current * 1.2
         if (anim.current === "Take Damage") tempSpeed /= 2
         const tempX = group.current.position.x + tempSpeed * pvx * delta
         const tempZ = group.current.position.z + tempSpeed * pvz * delta
@@ -251,9 +265,9 @@ const Zombie = ({ id, position=[0,0,0], type="ZMale", health=100, playerRef, zom
             const zvz = vz / distance
     
             const dotProduct = pvx * zvx + pvz * zvz
-            // Check if angle of direction heading is within
-            // 90 degrees of obstruction. (If obstruction is in front.)
-            if (dotProduct > 0) { 
+            // Check if angle of direction heading
+            // obstruction is in front.
+            if (dotProduct > 0.95) { 
               canMove = false
             }
           }

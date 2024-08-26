@@ -14,7 +14,7 @@ const Hud = ({ options, hudInfo, inventory, inventorySlot, setHudInfo }) => {
   }
   else if (hudInfo.health < 75) bgCol = "rgba(133,133,0,0.2)"
 
-  const imgSize = options.altMode ? 256 : 128
+  const imgSize = options.altMode ? 160 : 128
 
   useEffect(()=>{
     const item = inventory[inventorySlot]

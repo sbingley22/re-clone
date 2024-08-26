@@ -21,6 +21,7 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
   const targetedEnemy = useRef(null)
   const inventoryHeld = useRef(false)
   const inventoryUseHeld = useRef(false)
+  const shootTimer = useRef(0)
 
   // Level change
   useEffect(()=>{
@@ -32,11 +33,20 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
 
   // Alt Mode
   useEffect(()=>{
-    if (options.altMode) {
+    if (options.altMode === 1) {
+      setVisibleNodes(["Ana", "Pistol", "Shoes-HighTops", "Hair-Parted"])
+    }
+    else if (options.altMode === 2) {
       setVisibleNodes(["AnaGen", "Pistol", "Shoes-HighTops", "Hair-Parted"])
     }
+    else if (options.altMode === 3) {
+      setVisibleNodes(["SurvivorFGen", "Pistol", "Shoes-HighTops", "Hair-Parted", "Hair-TiedBack", "Hair-WavyPunk"])
+    }
+    else if (options.altMode === 4) {
+      setVisibleNodes(["SurvivorF", "Pistol", "Shoes-HighTops",  "Hair-WavyPunk", "GownTop"])
+    }
     else {
-      setVisibleNodes(["Ana", "Pistol", "Shoes-HighTops", "Jacket", "Hair-Parted"])
+      setVisibleNodes(["Ana", "Pistol", "Shoes-HighTops", "JacketShort", "Hair-Parted"])
     }
   }, [options])
 
@@ -49,6 +59,7 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
     if (a === "Jump") return true
     if (a === "Land") return true
     if (a === "Pistol Fire") return true
+    if (a === "Pistol Fire2") return true
     if (a === "Take Damage") return true
     if (a === "Dying") return true
     if (a === "Stunned") return true
@@ -74,7 +85,7 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
       color: 0x772211,
     }
 
-    playAudio("./audio/f-hurt.ogg", 0.7)
+    playAudio("./audio/f-hurt.ogg", 0.5)
 
     if (group.current.health <= 0) {
       // game over
@@ -101,15 +112,21 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
 
     // eslint-disable-next-line no-unused-vars
     const { forward, backward, left, right, jump, interact, inventoryLeft, inventoryRight, inventoryUse, shift, aimUp, aimLeft, aimRight, aimDown } = getKeys()
-    
 
     // Check Flags
+    let groundSurface = "normal"
     if (group.current.actionFlag) {
       group.current.actionFlag = null
     }
     if (group.current.dmgFlag) {
       takeDamage(group.current.dmgFlag)
       group.current.dmgFlag = null
+    }
+    if (group.current.groundFlag) {
+      if (group.current.groundFlag === "net") {
+        groundSurface = "net"
+      }
+      group.current.groundFlag = null
     }
 
     // Inventory
@@ -160,7 +177,7 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
       }
     } else inventoryUseHeld.current = false
 
-    const rotateToVec = (dx, dy) => {
+    const rotateToVec = (dx, dy, rotSpeed=0.1) => {
       // Calculate target rotation
       const direction = vec3b.set(dx, 0, dy).normalize()
       const angle = Math.atan2(direction.x, direction.z)
@@ -170,7 +187,7 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
       const targetQuaternion = quat.setFromAxisAngle(vec3c.set(0, 1, 0), angle)
 
       // Interpolate rotation using slerp
-      currentQuaternion.slerp(targetQuaternion, 0.1)
+      currentQuaternion.slerp(targetQuaternion, rotSpeed)
       group.current.quaternion.copy(currentQuaternion)
     }
     const kick = () => {
@@ -194,7 +211,7 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
     const shoot = () => {
       if (isUnskippableAnimation()) return
       // console.log(anim.current)
-      anim.current = "Pistol Fire"
+      anim.current = "Pistol Fire2"
 
       if (targetedEnemy.current) {
         let dmg = 20
@@ -208,6 +225,7 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
           }
           setInventory(tempInventory)
           playAudio("./audio/pistol-gunshot.wav", 0.25)
+          anim.current = "Pistol Fire"
         }
         else {
           playAudio("./audio/pistol-gunshot.wav", 0.14)
@@ -259,6 +277,16 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
         // Calculate the angle between the player's direction and the vector to the enemy
         const dotProduct = ndx * evx + ndy * evz;
         const angle = Math.acos(dotProduct);
+        
+        // If no aim direction shoot closest
+        if (dx === 0 && dy === 0) {
+          if (distance < closestDistance) {
+            closestEnemy = { x: vx, y: vz };
+            closestDistance = distance;
+            closestAngle = angle;
+            targetedEnemy.current = enemy.id
+          }
+        }
 
         // Check if this enemy is the closest in the direction the player is facing
         if (angle < Math.PI / 4 && distance < closestDistance && angle < closestAngle) { // You can adjust the angle threshold (Math.PI / 4) as needed
@@ -277,8 +305,7 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
       return closestEnemy
     }
     const aim = () => {
-      // console.log("aiming")
-      moving.current = "Pistol Aim"
+      moving.current = "Pistol Aim2"
       if (jumpForce.current !== null) return
       let dx = 0
       let dy = 0
@@ -287,6 +314,12 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
       else if (aimDown) dy = 1
       if (aimLeft) dx = -1
       else if (aimRight) dx = 1
+
+      if (options.autoAim) {
+        dy = 0
+        dx = 0
+      }
+
       if (gamepad.current.aimX) dx = gamepad.current.aimX
       if (gamepad.current.aimY) dy = gamepad.current.aimY * -1
 
@@ -294,29 +327,31 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
       dx = eLock.x
       dy = eLock.y
 
-      rotateToVec(dx, dy)
+      rotateToVec(dx, dy, 0.6)
 
-      // console.log(targetedEnemy.current)
-      if (targetedEnemy.current) {
-        if (jump || gamepad.current.jump) {
-          // console.log("kicking")
-          kick()
-        } else {
-          // console.log("shooting")
-          shoot()
-        }
+      if (targetedEnemy.current && (jump || gamepad.current.jump)) {
+        kick()
+      } 
+      else if (targetedEnemy.current && shootTimer.current > 0.4) {
+        shoot()
+        shootTimer.current = 0
       } 
       else {
+        shootTimer.current += delta
         if (!isUnskippableAnimation()) {
-          // console.log("aiming")
-          anim.current = "Pistol Aim"
+          anim.current = "Pistol Aim2"
+          if (inventory[inventorySlot].name === "power ammo") anim.current = "Pistol Aim"
         }
       }
     }
     const movement = () => {
       if (!group.current) return
       moving.current = "Idle"
-      if (aimDown || aimUp || aimLeft || aimRight || Math.abs(gamepad.current.aimX) > 0.4 || Math.abs(gamepad.current.aimY) > 0.4) {
+      if (Math.abs(gamepad.current.aimX) > 0.4 || Math.abs(gamepad.current.aimY) > 0.4) {
+        aim()
+        return
+      }
+      if (!options.autoAim && (aimDown || aimUp || aimLeft || aimRight)) {
         aim()
         return
       }
@@ -330,6 +365,16 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
       else if (backward) dy = 1
       if (left) dx = -1
       else if (right) dx = 1
+
+      // Change aiming to moving if auto aim
+      if (options.autoAim) {
+        if (aimUp) dy = -1
+        else if (aimDown) dy = 1
+        if (aimLeft) dx = -1
+        else if (aimRight) dx = 1
+      }
+
+      // Normalise horizontal movement
       if (dx && dy) {
         dx *= 0.7
         dy *= 0.7
@@ -341,6 +386,17 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
       if (Math.abs(gpmx) > moveDeadZone) dx = gpmx
       if (Math.abs(gpmy) > moveDeadZone) dy = gpmy * -1
 
+      // If standing still auto fire
+      if (options.autoFire && dx === 0 && dy === 0) {
+        let zombiesAlive = false
+        zombieRefs.current.forEach(z=>{
+          if (z.current?.health > 0) zombiesAlive = true
+        })
+        if (zombiesAlive) {
+          aim()
+          return
+        }
+      }
 
       // check for obstructions
       let runModifier = options.defaultRun === false ? shift : !shift
@@ -350,14 +406,19 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
       }
       const lowHealth = group.current.health < 50
       if (lowHealth) runModifier = false
-      const speed = 1.5 * delta * (runModifier? 2 : 1)
+
+      let speed = 1.9 * delta * (runModifier? 2 : 1)
+      if (["Pistol Fire", "Pistol Fire2"].includes(anim.current)) speed *= 0.75
+      if (groundSurface==="net") speed *= 0.35
+
       const targetPosition = vec3.set(group.current.position.x + dx * speed, group.current.position.y, group.current.position.z + dy * speed)
 
+      const sizeMul = 1.2
       const arena = levels.current[levelName].arena
-      if (targetPosition.z < arena.z1) targetPosition.z = group.current.position.z
-      if (targetPosition.z > arena.z2) targetPosition.z = group.current.position.z
-      if (targetPosition.x < arena.x1) targetPosition.x = group.current.position.x
-      if (targetPosition.x > arena.x2) {
+      if (targetPosition.z < arena.z1 * sizeMul) targetPosition.z = group.current.position.z
+      if (targetPosition.z > arena.z2 * sizeMul) targetPosition.z = group.current.position.z
+      if (targetPosition.x < arena.x1 * sizeMul) targetPosition.x = group.current.position.x
+      if (targetPosition.x > arena.x2 * sizeMul) {
         // Stop player from moving
         targetPosition.x =  group.current.position.x
         // Go to next level?
@@ -373,7 +434,9 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
       }
 
       if (dx || dy) {
-        rotateToVec(dx, dy)
+        if (["Pistol Fire", "Pistol Fire2"].includes(anim.current) === false) {
+          rotateToVec(dx, dy)
+        }
 
         // Tell mixer character wants to move
         if (runModifier) {
@@ -382,17 +445,22 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
         else {
           moving.current = "Walking"
           if (lowHealth) moving.current = "WalkingHurt"
+          if (groundSurface==="net") moving.current = "WalkingWade"
         }
 
         // Apply moving animation only when applicable
         if (!isUnskippableAnimation()) {
           if (runModifier) {
-            if (jumpForce.current === null) anim.current = "Jogging"
+            if (jumpForce.current === null) {
+              anim.current = "Jogging"
+              if (groundSurface==="net") anim.current = "WalkingWade"
+            }
           }
           else {
             if (jumpForce.current === null) {
               anim.current = "Walking"
               if (lowHealth) anim.current = "WalkingHurt"
+              if (groundSurface==="net") anim.current = "WalkingWade"
             }
           }
         }
@@ -412,7 +480,8 @@ const Player = ({ setMode, options, levels, levelName, setLevelName, setHudInfo,
       if (jumpForce.current === null) {
         // player is grounded
         if (isUnskippableAnimation()) return
-        if (aimDown || aimUp || aimLeft || aimRight) return
+        if (groundSurface==="net") return
+        if (!options.autoAim && (aimDown || aimUp || aimLeft || aimRight)) return
         if (jump || gamepad.current.jump) {
           jumpForce.current = 0.08
           anim.current = "Jump"
