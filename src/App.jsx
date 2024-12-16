@@ -10,6 +10,7 @@ function App() {
     defaultRun: true,
     autoFire: true,
     autoAim: true,
+    lowSpec: false,
   })
   const [levelName, setLevelName] = useState("streets-1")
 

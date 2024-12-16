@@ -219,6 +219,7 @@ const Game = ({ setMode, options, levelName, setLevelName, score }) => {
             fov: camFov
           }}
           shadows
+          dpr={options.lowSpec? .3 : 1}
         >
           <Suspense>
 
